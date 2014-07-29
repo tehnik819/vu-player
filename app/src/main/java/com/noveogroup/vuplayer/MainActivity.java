@@ -1,23 +1,17 @@
 package com.noveogroup.vuplayer;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity implements Library.OnClickButtonListener {
-    private FragmentManager fm;
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fm = getSupportFragmentManager();
-        fm.beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new Library())
                 .commit();
     }
@@ -32,18 +26,11 @@ public class MainActivity extends ActionBarActivity implements Library.OnClickBu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClickButton() {
-        Log.d("Main", "onClickButton()");
-        fm.beginTransaction()
-                .replace(R.id.container, new VideoFragment())
-                .addToBackStack(null)
-                .commit();
     }
 }

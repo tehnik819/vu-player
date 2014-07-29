@@ -1,47 +1,38 @@
 package com.noveogroup.vuplayer;
 
-import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.MediaController;
-import android.widget.VideoView;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class VideoFragment extends Fragment implements SurfaceHolder.Callback {
-    public final static int seekTime = 3000;
-    //private VideoView videoView;
+    private int seekTime;
+    private Properties properties;
     private MediaPlayer mediaPlayer;
-    private FragmentActivity mainContext;
     private String viewSource;
     private Button playBtn;
     private Button pauseBtn;
     private Button backwardBtn;
     private Button forwardBtn;
     private SurfaceView videoSurface;
-
-    @Override
-    public void onAttach(Activity activity) {
-        mainContext=(FragmentActivity) activity;
-        super.onAttach(activity);
-    }
+    private final static String TAG = "VideoFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        initProperties();
         View v = inflater.inflate(R.layout.fragment_video, container, false);
-        Log.d("VideoFragment", Environment.getExternalStorageDirectory().toString());
         viewSource = Environment.getExternalStorageDirectory().toString() + "/test.mp4";
         mediaPlayer = new MediaPlayer();
 
@@ -57,7 +48,7 @@ public class VideoFragment extends Fragment implements SurfaceHolder.Callback {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
+                if(!mediaPlayer.isPlaying()) {
                     mediaPlayer.start();
                 }
             }
@@ -66,7 +57,7 @@ public class VideoFragment extends Fragment implements SurfaceHolder.Callback {
         pauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer != null && mediaPlayer.isPlaying()) {
+                if(mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                 }
             }
@@ -75,30 +66,31 @@ public class VideoFragment extends Fragment implements SurfaceHolder.Callback {
         backwardBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer != null) {
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - seekTime);
-                }
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - seekTime);
             }
         });
 
         forwardBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer != null) {
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + seekTime);
-                }
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + seekTime);
             }
         });
 
-        /*
-        videoView = (VideoView) v.findViewById(R.id.videoView);
-        videoView.setVideoPath(viewSource);
-        MediaController mc = new MediaController(mainContext);
-        videoView.setMediaController(mc);
-        videoView.requestFocus(0);
-        videoView.start();
-        */
         return v;
+    }
+
+    private void initProperties() {
+        properties = new Properties();
+        try {
+            InputStream rawResources = getResources().openRawResource(R.raw.config);
+            properties.load(rawResources);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage(),e);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        seekTime = Integer.valueOf(properties.getProperty("seek_time", String.valueOf(5000)));
     }
 
     @Override
