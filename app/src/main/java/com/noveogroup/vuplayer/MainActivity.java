@@ -14,8 +14,8 @@ public class MainActivity extends ActionBarActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new Library())
                 .commit();
-    }
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

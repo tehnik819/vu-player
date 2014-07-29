@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <SurfaceView
         android:id="@+id/video_surface"
         android:layout_width="match_parent"
@@ -51,5 +52,16 @@
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@+id/backward"
             style="?android:attr/buttonStyleSmall"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New TextNew TextNew TextNew TextNew TextNew Text"
+        android:textSize="@dimen/control_buttons_text_size"
+        android:textColor="@android:color/white"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
