@@ -3,65 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <SurfaceView
-        android:id="@+id/video_surface"
+    <view
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/play"
-        android:layout_alignParentTop="true" />
+        class="com.noveogroup.vuplayer.VideoPlayer"
+        android:id="@+id/video_player"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
-
-        <Button
-            android:id="@+id/play"
-            android:layout_width="wrap_content"
+        <view
+            android:id="@+id/video_controller"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/control_play"
-            android:textSize="@dimen/control_buttons_text_size"
+            class="com.noveogroup.vuplayer.VideoController"
+            android:background="@color/control_background"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            style="?android:attr/buttonStyleSmall"/>
-
-        <Button
-            android:id="@+id/pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/control_pause"
-            android:textSize="@dimen/control_buttons_text_size"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/play"
-            style="?android:attr/buttonStyleSmall"/>
-
-        <Button
-            android:id="@+id/backward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/control_backward"
-            android:textSize="@dimen/control_buttons_text_size"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/pause"
-            style="?android:attr/buttonStyleSmall"/>
-
-        <Button
-            android:id="@+id/forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/control_forward"
-            android:textSize="@dimen/control_buttons_text_size"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/backward"
-            style="?android:attr/buttonStyleSmall"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New TextNew TextNew TextNew TextNew TextNew Text"
-        android:textSize="@dimen/control_buttons_text_size"
-        android:textColor="@android:color/white"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true" />
 
 </RelativeLayout>
