@@ -47,13 +47,6 @@ public class VideoFragment extends Fragment {
         videoPlayer.prepare();
         videoPlayer.play();
 
-        videoPlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Video Player Touched", Toast.LENGTH_LONG).show();
-            }
-        });
-
         return v;
     }
 

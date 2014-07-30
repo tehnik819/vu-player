@@ -1,13 +1,20 @@
 package com.noveogroup.vuplayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.io.IOException;
 
@@ -53,6 +60,25 @@ public class VideoPlayer extends SurfaceView implements SurfaceHolder.Callback {
         mediaPlayer.release();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                Log.d(TAG, "ACTION_DOWN");
+                if(mVideoController.isShowing()) {
+                    Log.d(TAG, "Hide control");
+                    mVideoController.hide();
+                }
+                else {
+                    Log.d(TAG, "Show control");
+                    mVideoController.show();
+                }
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
     public void setDataSource(String source) {
         mDataSource = source;
         try {
@@ -95,10 +121,10 @@ public class VideoPlayer extends SurfaceView implements SurfaceHolder.Callback {
             Log.d(TAG, "play() | VideoWidth = " + mediaPlayer.getVideoWidth() + "; VideoHeight = " + mediaPlayer.getVideoHeight());
             mVideoHeight = mediaPlayer.getVideoHeight();
             mVideoWidth = mediaPlayer.getVideoWidth();
-            //RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight);
-            //this.setLayoutParams(layoutParams);
-
+            fitToScreen();
             mediaPlayer.start();
+            //mVideoController.hide();
+            Log.d(TAG, "mVideoView.isShowing() = " + mVideoController.isShowing());
         }
     }
 
@@ -156,5 +182,18 @@ public class VideoPlayer extends SurfaceView implements SurfaceHolder.Callback {
         return mediaPlayer.isPlaying();
     }
 
-
+    private void fitToScreen() {
+        mVideoWidth = mediaPlayer.getVideoWidth();
+        mVideoHeight = mediaPlayer.getVideoHeight();
+        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+        double widthRatio = ((double)(displayMetrics.widthPixels))/mVideoWidth;
+        double heightRatio = ((double)(displayMetrics.heightPixels))/mVideoHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                (int)(mVideoWidth*ratio), (int)(mVideoHeight*ratio));
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        this.setLayoutParams(layoutParams);
+    }
 }
