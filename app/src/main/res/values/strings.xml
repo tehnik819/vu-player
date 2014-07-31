@@ -10,4 +10,7 @@
     <string name="control_backward">Backward</string>
     <string name="control_forward">Forward</string>
 
+    <string name="brightness_adjuster_creation_exception">
+        BrightnessAdjuster instance can not be created.</string>
+
 </resources>

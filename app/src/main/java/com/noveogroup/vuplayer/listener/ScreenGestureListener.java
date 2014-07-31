@@ -4,6 +4,7 @@
 
 package com.noveogroup.vuplayer.listener;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.FloatMath;
 import android.util.Log;
@@ -17,16 +18,18 @@ import com.noveogroup.vuplayer.ScreenAction;
 public final class ScreenGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     public static final String DEBUG_TAG = "VuPlayer.DEBUG_SCREEN_GESTURE_LISTENER";
-    public static final float SCROLL_MAX_COSINE = 0.95f;
+    public static final float SCROLL_MAX_COSINE = 0.97f;
 
     private OnScreenActionListener onScreenActionListener;
+    private int xStart;
+    private int yStart;
 
     public interface OnScreenActionListener {
         void performAction(ScreenAction screenAction, float distance);
     }
 
-    public ScreenGestureListener(OnScreenActionListener onScreenActionListener) {
-        this.onScreenActionListener = onScreenActionListener;
+    public ScreenGestureListener(Activity activity) {
+        onScreenActionListener = (OnScreenActionListener) activity;
     }
 
     @Override
@@ -49,43 +52,57 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
         float deltaX = event2.getX() - event1.getX();
         float deltaY = event2.getY() - event1.getY();
 
-        float scrollHorizontalCosine = (deltaX) / FloatMath.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if(scrollHorizontalCosine > SCROLL_MAX_COSINE) {
-            onScreenActionListener.performAction(ScreenAction.SEEK_FORWARD, deltaX);
-            return true;
-        }
-        if(-scrollHorizontalCosine > SCROLL_MAX_COSINE) {
-            onScreenActionListener.performAction(ScreenAction.SEEK_BACKWARD, -deltaX);
+        float horizontalCosineFromStart = (deltaX) / FloatMath.sqrt(deltaX * deltaX
+                                                                    + deltaY * deltaY);
+        float horizontalCosine = -distanceX / FloatMath.sqrt(distanceX * distanceX
+                                                             + distanceY * distanceY);
+
+        if (horizontalCosineFromStart > SCROLL_MAX_COSINE
+                                               || -horizontalCosineFromStart > SCROLL_MAX_COSINE) {
+            if (horizontalCosine > SCROLL_MAX_COSINE || -horizontalCosine > SCROLL_MAX_COSINE) {
+                if (distanceX < 0) {
+                    onScreenActionListener.performAction(ScreenAction.SEEK_FORWARD, -distanceX);
+                } else {
+                    onScreenActionListener.performAction(ScreenAction.SEEK_BACKWARD, distanceX);
+                }
+            }
             return true;
         }
 
-        float scrollVerticalCosine = (deltaY) / FloatMath.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if(scrollVerticalCosine > SCROLL_MAX_COSINE) {
-            int screen_width = getScreenWidth();
-            if(event1.getX() < ((float) screen_width) / 3) {
-                onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_DOWN, deltaY);
-                return true;
-            }
-            if(event1.getX() < ((float) screen_width) / 3 * 2) {
-                onScreenActionListener.performAction(ScreenAction.SUBTITLES_DOWN, deltaY);
-                return true;
-            }
-            onScreenActionListener.performAction(ScreenAction.VOLUME_DOWN, deltaY);
-            return true;
-        }
+        float verticalCosineFromStart = (deltaY) / FloatMath.sqrt(deltaX * deltaX
+                                                                  + deltaY * deltaY);
+        float verticalCosine = -distanceY / FloatMath.sqrt(distanceX * distanceX
+                                                           + distanceY * distanceY);
 
-        if(-scrollVerticalCosine > SCROLL_MAX_COSINE) {
-            int screen_width = getScreenWidth();
-            if(event1.getX() < ((float) screen_width) / 3) {
-                onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_UP, deltaY);
-                return true;
+        if(verticalCosineFromStart > SCROLL_MAX_COSINE
+                                                 || -verticalCosineFromStart > SCROLL_MAX_COSINE) {
+            if (verticalCosine > SCROLL_MAX_COSINE || -verticalCosine > SCROLL_MAX_COSINE) {
+                int screenWidth = getScreenWidth();
+                if (distanceY > 0) {
+                    if (event2.getX() < ((float) screenWidth) / 3) {
+                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_UP, distanceY);
+                        return true;
+                    }
+                    if (event2.getX() < ((float) screenWidth) / 3 * 2) {
+                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_UP, distanceY);
+                        return true;
+                    }
+                    onScreenActionListener.performAction(ScreenAction.VOLUME_UP, distanceY);
+                } else {
+                    if (event2.getX() < ((float) screenWidth) / 3) {
+                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_DOWN,
+                                                             -distanceY);
+                        return true;
+                    }
+                    if (event2.getX() < ((float) screenWidth) / 3 * 2) {
+                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_DOWN,
+                                                             -distanceY);
+                        return true;
+                    }
+                    onScreenActionListener.performAction(ScreenAction.VOLUME_DOWN, -distanceY);
+                }
+
             }
-            if(event1.getX() < ((float) screen_width) / 3 * 2) {
-                onScreenActionListener.performAction(ScreenAction.SUBTITLES_UP, deltaY);
-                return true;
-            }
-            onScreenActionListener.performAction(ScreenAction.VOLUME_UP, deltaY);
-            return true;
         }
 
         return true;

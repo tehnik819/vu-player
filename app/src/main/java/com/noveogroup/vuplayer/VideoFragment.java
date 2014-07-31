@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.noveogroup.vuplayer.util.BrightnessAdjuster;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +46,9 @@ public class VideoFragment extends Fragment {
 
         videoPlayer = (VideoPlayer) v.findViewById(R.id.video_player);
         videoController = (VideoController) v.findViewById(R.id.video_controller);
+
+//        Save system settings in order to restore it later.
+        BrightnessAdjuster.saveSystemBrightness(getActivity().getContentResolver());
 
         videoPlayer.setVideoController(videoController);
         videoPlayer.setDataSource(viewSource);
@@ -74,5 +79,14 @@ public class VideoFragment extends Fragment {
 
         videoPlayer = null;
         videoController = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+//        Restore saved system settings.
+        BrightnessAdjuster.restoreSavedBrightness(getActivity().getContentResolver(),
+                                                  getActivity().getWindow());
     }
 }
