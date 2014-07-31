@@ -21,20 +21,12 @@ public class VideoController extends RelativeLayout{
 
     public VideoController(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
-        mRoot = getRoot();
-        this.addView(mRoot);
-        initControllerView(mRoot);
-        setButtonsListeners();
+        initialize(context);
     }
 
     public VideoController(Context context) {
         super(context);
-        mContext = context;
-        mRoot = getRoot();
-        this.addView(mRoot);
-        initControllerView(mRoot);
-        setButtonsListeners();
+        initialize(context);
     }
 
     private void addViewsToRoot() {
@@ -85,6 +77,15 @@ public class VideoController extends RelativeLayout{
 
     public void setVideoPlayer(VideoPlayer vp) {
         mVideoPlayer = vp;
+    }
+
+    private void initialize(Context context) {
+        mContext = context;
+        mRoot = getRoot();
+        this.addView(mRoot);
+        initControllerView(mRoot);
+        setButtonsListeners();
+        setClickable(true);
     }
 
 

@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ ******************************************************************************/
+
 package com.noveogroup.vuplayer;
 
 import android.os.Bundle;

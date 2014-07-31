@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ ******************************************************************************/
+
 package com.noveogroup.vuplayer;
 
 import android.media.MediaPlayer;
@@ -47,13 +51,6 @@ public class VideoFragment extends Fragment {
         videoPlayer.prepare();
         videoPlayer.play();
 
-        videoPlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Video Player Touched", Toast.LENGTH_LONG).show();
-            }
-        });
-
         return v;
     }
 
@@ -69,5 +66,13 @@ public class VideoFragment extends Fragment {
         }
         seekTime = Integer.valueOf(properties.getProperty("seek_time", String.valueOf(5000)));
         viewSource = Environment.getExternalStorageDirectory().toString() + "/test.mp4";
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        videoPlayer = null;
+        videoController = null;
     }
 }
