@@ -48,7 +48,9 @@ public class VideoFragment extends Fragment {
         videoController = (VideoController) v.findViewById(R.id.video_controller);
 
 //        Save system settings in order to restore it later.
-        BrightnessAdjuster.saveSystemBrightness(getActivity().getContentResolver());
+        BrightnessAdjuster.saveSystemSettings(getActivity().getContentResolver());
+//        Set manual brightness control.
+        BrightnessAdjuster.setManualMode(getActivity().getContentResolver());
 
         videoPlayer.setVideoController(videoController);
         videoPlayer.setDataSource(viewSource);
@@ -86,7 +88,7 @@ public class VideoFragment extends Fragment {
         super.onPause();
 
 //        Restore saved system settings.
-        BrightnessAdjuster.restoreSavedBrightness(getActivity().getContentResolver(),
+        BrightnessAdjuster.restoreSavedSettings(getActivity().getContentResolver(),
                                                   getActivity().getWindow());
     }
 }

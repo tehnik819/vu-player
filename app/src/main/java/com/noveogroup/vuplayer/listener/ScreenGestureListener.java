@@ -4,14 +4,10 @@
 
 package com.noveogroup.vuplayer.listener;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.FloatMath;
 import android.util.Log;
-import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 
 import com.noveogroup.vuplayer.ScreenAction;
 
@@ -21,15 +17,15 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
     public static final float SCROLL_MAX_COSINE = 0.97f;
 
     private OnScreenActionListener onScreenActionListener;
-    private int xStart;
-    private int yStart;
+    private int width;
 
     public interface OnScreenActionListener {
         void performAction(ScreenAction screenAction, float distance);
     }
 
-    public ScreenGestureListener(Activity activity) {
-        onScreenActionListener = (OnScreenActionListener) activity;
+    public ScreenGestureListener(OnScreenActionListener onScreenActionListener, int width) {
+        this.onScreenActionListener = onScreenActionListener;
+        this.width = width;
     }
 
     @Override
@@ -77,42 +73,42 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
         if(verticalCosineFromStart > SCROLL_MAX_COSINE
                                                  || -verticalCosineFromStart > SCROLL_MAX_COSINE) {
             if (verticalCosine > SCROLL_MAX_COSINE || -verticalCosine > SCROLL_MAX_COSINE) {
-                int screenWidth = getScreenWidth();
-                if (distanceY > 0) {
-                    if (event2.getX() < ((float) screenWidth) / 3) {
-                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_UP, distanceY);
-                        return true;
-                    }
-                    if (event2.getX() < ((float) screenWidth) / 3 * 2) {
-                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_UP, distanceY);
-                        return true;
-                    }
-                    onScreenActionListener.performAction(ScreenAction.VOLUME_UP, distanceY);
-                } else {
-                    if (event2.getX() < ((float) screenWidth) / 3) {
-                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_DOWN,
-                                                             -distanceY);
-                        return true;
-                    }
-                    if (event2.getX() < ((float) screenWidth) / 3 * 2) {
-                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_DOWN,
-                                                             -distanceY);
-                        return true;
-                    }
-                    onScreenActionListener.performAction(ScreenAction.VOLUME_DOWN, -distanceY);
+                if (event2.getX() < ((float) width) / 3) {
+                    onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_CHANGE, distanceY);
+                    return true;
                 }
+                if (event2.getX() < ((float) width) / 3 * 2) {
+                    onScreenActionListener.performAction(ScreenAction.SUBTITLES_CHANGE, distanceY);
+                    return true;
+                }
+                onScreenActionListener.performAction(ScreenAction.VOLUME_CHANGE, distanceY);
+//                if (distanceY > 0) {
+//                    if (event2.getX() < ((float) width) / 3) {
+//                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_UP, distanceY);
+//                        return true;
+//                    }
+//                    if (event2.getX() < ((float) width) / 3 * 2) {
+//                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_UP, distanceY);
+//                        return true;
+//                    }
+//                    onScreenActionListener.performAction(ScreenAction.VOLUME_UP, distanceY);
+//                } else {
+//                    if (event2.getX() < ((float) width) / 3) {
+//                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_DOWN,
+//                                                             -distanceY);
+//                        return true;
+//                    }
+//                    if (event2.getX() < ((float) width) / 3 * 2) {
+//                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_DOWN,
+//                                                             -distanceY);
+//                        return true;
+//                    }
+//                    onScreenActionListener.performAction(ScreenAction.VOLUME_DOWN, -distanceY);
+//                }
 
             }
         }
 
         return true;
-    }
-
-    private int getScreenWidth() {
-        WindowManager windowManager = (WindowManager) ((Context) onScreenActionListener)
-                                                       .getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-
-        return display.getWidth();
     }
 }

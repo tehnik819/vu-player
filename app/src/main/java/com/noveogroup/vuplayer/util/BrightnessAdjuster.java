@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ ******************************************************************************/
+
 package com.noveogroup.vuplayer.util;
 
 import android.app.ActionBar;
@@ -13,7 +17,7 @@ public class BrightnessAdjuster {
     public final static String ERROR_TAG = "VuPlayer.ERROR_BRIGHTNESS_ADJUSTER";
     public final static String DEBUG_TAG = "VuPlayer.DEBUG_BRIGHTNESS_ADJUSTER";
 
-    public final static int BRIGHTNESS_MIN = 25;
+    public final static float BRIGHTNESS_MIN = 0.02f;
 
     private static int savedBrightness;
     private static int savedBrightnessMode;
@@ -23,29 +27,36 @@ public class BrightnessAdjuster {
     }
 
     public static void setManualMode(ContentResolver contentResolver) {
+        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                               Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+    }
+
+    public static void saveSystemSettings(ContentResolver contentResolver) {
         try {
             savedBrightnessMode = Settings.System.getInt(contentResolver,
                     Settings.System.SCREEN_BRIGHTNESS_MODE);
         } catch (Settings.SettingNotFoundException exception) {
             Log.e(ERROR_TAG, "Can not access system brightness mode.");
         }
-        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
-                               Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+
+        savedBrightness = getSystemBrightnessInt(contentResolver);
     }
 
-    public static void saveSystemBrightness(ContentResolver contentResolver) {
-        savedBrightness = getSystemBrightness(contentResolver);
-    }
-
-    public static void setBrightness(ContentResolver contentResolver,
-                                           Window window, int newBrightness) {
-        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, newBrightness);
+    public static float setBrightness(ContentResolver contentResolver,
+                                           Window window, float newBrightness) {
+        if(newBrightness < 0 || newBrightness > 1) {
+            return -1;
+        }
+        float newBrightnessReal = (1 - BRIGHTNESS_MIN) * newBrightness + BRIGHTNESS_MIN;
+        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS,
+                                                              Math.round(255 * newBrightnessReal));
         WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.screenBrightness = newBrightness / (float) 255;
+        layoutParams.screenBrightness = newBrightnessReal;
         window.setAttributes(layoutParams);
+        return newBrightness;
     }
 
-    public static int getSystemBrightness(ContentResolver contentResolver) {
+    private static int getSystemBrightnessInt(ContentResolver contentResolver) {
         int brightness = 0;
 
         try {
@@ -58,21 +69,23 @@ public class BrightnessAdjuster {
         return brightness;
     }
 
-    public static void restoreSavedBrightness(ContentResolver contentResolver, Window window) {
+    public static void restoreSavedSettings(ContentResolver contentResolver, Window window) {
         setBrightness(contentResolver, window, savedBrightness);
         Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
                                savedBrightnessMode);
     }
 
-    public static int addBrightness(ContentResolver contentResolver, Window window, int addition) {
-        int brightness = getSystemBrightness(contentResolver);
-        Log.d(DEBUG_TAG, String.format("%d", brightness));
+    public static float addBrightness(ContentResolver contentResolver, Window window,
+                                                                                 float addition) {
+        float brightness = (getSystemBrightnessInt(contentResolver) / (float) 255 - BRIGHTNESS_MIN)
+                            / (1 - BRIGHTNESS_MIN);
+//        Log.d(DEBUG_TAG, String.format("%f", brightness));
         if (addition > 0) {
-            addition = brightness + addition > 255 ? 0 : addition;
+            brightness = brightness + addition > 1 ? 1 : brightness + addition;
         } else {
-            addition = brightness + addition < BRIGHTNESS_MIN ? 0 : addition;
+            brightness = brightness + addition < 0 ? 0 : brightness + addition;
         }
-        setBrightness(contentResolver, window, brightness + addition);
-        return addition;
+
+        return setBrightness(contentResolver, window, brightness);
     }
 }

@@ -4,15 +4,19 @@
 
 package com.noveogroup.vuplayer;
 
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.listener.ScreenGestureListener;
@@ -23,13 +27,11 @@ public class MainActivity extends ActionBarActivity
 
     public final static String DEBUG_TAG = "VuPlayer.DEBUG_MAIN_ACTIVITY";
 
-    public final static float BAR_LENGTH_IN_INCHES = 4;
+    public final static float BAR_LENGTH_IN_INCHES = 1.5f;
 
     private GestureDetectorCompat gestureDetectorCompat;
     private VideoPlayer videoPlayer;
     private TextView screenActionTextView;
-    private float distanceGotOver = 0;
-    private ScreenAction previousScreenAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,8 @@ public class MainActivity extends ActionBarActivity
                 .commit();
 
 //        Create GestureDetectorCompat for the Activity.
-        gestureDetectorCompat = new GestureDetectorCompat(this, new ScreenGestureListener(this));
+        gestureDetectorCompat = new GestureDetectorCompat(this,
+                                                new ScreenGestureListener(this, getScreenWidth()));
     }
 
     @Override
@@ -65,7 +68,6 @@ public class MainActivity extends ActionBarActivity
     public boolean onTouchEvent(MotionEvent event) {
         if(event.getAction() == MotionEvent.ACTION_UP) {
             if(screenActionTextView != null) {
-                distanceGotOver = 0;
                 screenActionTextView.setVisibility(View.INVISIBLE);
             }
         }
@@ -79,25 +81,17 @@ public class MainActivity extends ActionBarActivity
         return super.onTouchEvent(event);
     }
 
+//    Override method from OnScreenGestureListener.
     @Override
     public void performAction(ScreenAction screenAction, float distance) {
 //        Log.d(DEBUG_TAG, screenAction.toString());
         switch (screenAction) {
-            case BRIGHTNESS_UP:
-                distanceGotOver += getInches(distance, false);
-                float distanceRatio = (distanceGotOver) / BAR_LENGTH_IN_INCHES;
-                BrightnessAdjuster.addBrightness(getContentResolver(), getWindow(),
-                                                 Math.round(255 * distanceRatio));
-                showScreenActionMessage(String.format("Brightness: +%d%%",
-                                        Math.round(distanceRatio * 100)));
-                break;
-            case BRIGHTNESS_DOWN:
-                distanceGotOver += getInches(distance, false);
-                distanceRatio = (distanceGotOver) / BAR_LENGTH_IN_INCHES;
-                BrightnessAdjuster.addBrightness(getContentResolver(), getWindow(),
-                                                 Math.round(-255 * distanceRatio));
-                showScreenActionMessage(String.format("Brightness: -%d%%",
-                                        Math.round(distanceRatio * 100)));
+            case BRIGHTNESS_CHANGE:
+                float distanceRatio = getInches(distance, false) / BAR_LENGTH_IN_INCHES;
+                float brightness = BrightnessAdjuster.addBrightness(getContentResolver(),
+                        getWindow(), distanceRatio);
+                showScreenActionMessage(String.format("Brightness: %d%%",
+                        Math.round(brightness * 100)));
                 break;
             default:
                 showScreenActionMessage(screenAction.toString());
@@ -121,5 +115,12 @@ public class MainActivity extends ActionBarActivity
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         return isXAxis ? pixels / displayMetrics.xdpi : pixels / displayMetrics.ydpi;
+    }
+
+    private int getScreenWidth() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        return displayMetrics.widthPixels;
     }
 }
