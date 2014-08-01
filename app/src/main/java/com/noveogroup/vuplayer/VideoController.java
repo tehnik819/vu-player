@@ -2,13 +2,10 @@ package com.noveogroup.vuplayer;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
@@ -114,12 +111,11 @@ public class VideoController extends RelativeLayout {
             public void onClick(View v) {
                 if(mVideoPlayer.isPlaying()) {
                     mVideoPlayer.pause();
-                    mPlayButton.setImageResource(R.drawable.ic_play);
                 }
                 else {
                     mVideoPlayer.play();
-                    mPlayButton.setImageResource(R.drawable.ic_pause);
                 }
+                updatePausePlay(mVideoPlayer.getCurrentState());
             }
         });
     }
@@ -140,5 +136,19 @@ public class VideoController extends RelativeLayout {
 
     public boolean isShowing() {
         return isShow;
+    }
+
+    public void updatePausePlay(int state) {
+        switch (state) {
+            case VideoPlayer.STATE_PLAY:
+                mPlayButton.setImageResource(R.drawable.ic_pause);
+                break;
+            case VideoPlayer.STATE_STOP:
+                mPlayButton.setImageResource(R.drawable.ic_play);
+                break;
+            case VideoPlayer.STATE_IDLE:
+                mPlayButton.setImageResource(R.drawable.ic_play);
+                break;
+        }
     }
 }
