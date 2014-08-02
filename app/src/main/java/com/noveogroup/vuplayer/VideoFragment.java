@@ -4,23 +4,13 @@
 
 package com.noveogroup.vuplayer;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.MediaController;
-import android.widget.RelativeLayout.LayoutParams;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.noveogroup.vuplayer.util.BrightnessAdjuster;
 
@@ -37,10 +27,13 @@ public class VideoFragment extends Fragment {
     private VideoPlayer videoPlayer;
     private VideoController videoController;
 
+    private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
+    private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
     private final static String TAG = "VideoFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
         initProperties();
         View v = inflater.inflate(R.layout.fragment_video, container, false);
 
@@ -59,6 +52,28 @@ public class VideoFragment extends Fragment {
         videoPlayer.play();
 
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null) {
+            videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
+            videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
+        outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        videoPlayer.release();
     }
 
     private void initProperties() {
