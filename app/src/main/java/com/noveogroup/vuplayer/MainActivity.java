@@ -5,33 +5,25 @@
 package com.noveogroup.vuplayer;
 
 import android.content.Context;
-import android.os.Build;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.noveogroup.vuplayer.listener.ScreenGestureListener;
-import com.noveogroup.vuplayer.util.BrightnessAdjuster;
+import com.noveogroup.vuplayer.adjuster.AudioAdjuster;
+import com.noveogroup.vuplayer.enumeration.ScreenAction;
+import com.noveogroup.vuplayer.listener.OnScreenGestureListener;
+import com.noveogroup.vuplayer.adjuster.BrightnessAdjuster;
 
-public class MainActivity extends ActionBarActivity
-                          implements ScreenGestureListener.OnScreenActionListener {
+public class MainActivity extends ActionBarActivity {
 
     public final static String DEBUG_TAG = "VuPlayer.DEBUG_MAIN_ACTIVITY";
-
-    public final static float BAR_LENGTH_IN_INCHES = 1.5f;
-
-    private GestureDetectorCompat gestureDetectorCompat;
-    private VideoPlayer videoPlayer;
-    private TextView screenActionTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +33,8 @@ public class MainActivity extends ActionBarActivity
                 .add(R.id.container, new Library())
                 .commit();
 
-//        Create GestureDetectorCompat for the Activity.
-        gestureDetectorCompat = new GestureDetectorCompat(this,
-                                                new ScreenGestureListener(this, getScreenWidth()));
+//        Set hardware volume buttons to work in the Activity.
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override
@@ -61,66 +52,5 @@ public class MainActivity extends ActionBarActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-//    Override onTouchEvent() in order to use created GestureDetectorCompat.
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_UP) {
-            if(screenActionTextView != null) {
-                screenActionTextView.setVisibility(View.INVISIBLE);
-            }
-        }
-        else {
-            videoPlayer = videoPlayer == null ? (VideoPlayer) findViewById(R.id.video_player)
-                    : videoPlayer;
-            if (videoPlayer != null && videoPlayer.getVisibility() == View.VISIBLE) {
-                gestureDetectorCompat.onTouchEvent(event);
-            }
-        }
-        return super.onTouchEvent(event);
-    }
-
-//    Override method from OnScreenGestureListener.
-    @Override
-    public void performAction(ScreenAction screenAction, float distance) {
-//        Log.d(DEBUG_TAG, screenAction.toString());
-        switch (screenAction) {
-            case BRIGHTNESS_CHANGE:
-                float distanceRatio = getInches(distance, false) / BAR_LENGTH_IN_INCHES;
-                float brightness = BrightnessAdjuster.addBrightness(getContentResolver(),
-                        getWindow(), distanceRatio);
-                showScreenActionMessage(String.format("Brightness: %d%%",
-                        Math.round(brightness * 100)));
-                break;
-            default:
-                showScreenActionMessage(screenAction.toString());
-        }
-
-    }
-
-    private void showScreenActionMessage(String message) {
-//        Show ScreenAction on the screen.
-        screenActionTextView = screenActionTextView == null
-                ? (TextView) findViewById(R.id.screen_action_text_view)
-                : screenActionTextView;
-        if(screenActionTextView != null) {
-            screenActionTextView.setText(message);
-            screenActionTextView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private float getInches(float pixels, boolean isXAxis) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        return isXAxis ? pixels / displayMetrics.xdpi : pixels / displayMetrics.ydpi;
-    }
-
-    private int getScreenWidth() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        return displayMetrics.widthPixels;
     }
 }

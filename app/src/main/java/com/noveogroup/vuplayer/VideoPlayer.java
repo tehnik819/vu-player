@@ -73,25 +73,6 @@ public class VideoPlayer extends SurfaceView {
         }
     };
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "ACTION_DOWN");
-                if(mVideoController.isShowing()) {
-                    Log.d(TAG, "Hide control");
-                    mVideoController.hide();
-                }
-                else {
-                    Log.d(TAG, "Show control");
-                    mVideoController.show();
-                }
-                break;
-        }
-
-        return super.onTouchEvent(event);
-    }
-
     public void setDataSource(String source) {
         mDataSource = source;
         try {
@@ -157,21 +138,11 @@ public class VideoPlayer extends SurfaceView {
     }
 
     public void backward() {
-        if(mediaPlayer.getCurrentPosition() >= seekTime) {
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - seekTime);
-        }
-        else if(mediaPlayer.getCurrentPosition() < seekTime) {
-            mediaPlayer.seekTo(BEGIN_OF_VIDEO_TIME);
-        }
+        addTime(-seekTime);
     }
 
     public void forward() {
-        if(mediaPlayer.getCurrentPosition() <= (mediaPlayer.getDuration() - seekTime)) {
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + seekTime);
-        }
-        else if(mediaPlayer.getCurrentPosition() > (mediaPlayer.getDuration() - seekTime)) {
-            mediaPlayer.seekTo(mediaPlayer.getDuration());
-        }
+        addTime(seekTime);
     }
 
     public void seekTo(int millis) {
@@ -248,5 +219,37 @@ public class VideoPlayer extends SurfaceView {
                 break;
         }
         mVideoController.updatePausePlay(state);
+    }
+
+    public void changeControllerVisibility() {
+        if(mVideoController.isShowing()) {
+            Log.d(TAG, "Hide control");
+            mVideoController.hide();
+        }
+        else {
+            Log.d(TAG, "Show control");
+            mVideoController.show();
+        }
+    }
+
+    public int addTime(final int addition) {
+        int currentPosition = mediaPlayer.getCurrentPosition();
+
+        if(addition > 0) {
+            currentPosition = currentPosition + addition > mediaPlayer.getDuration()
+                            ? mediaPlayer.getDuration() : currentPosition + addition;
+        }
+        else {
+            currentPosition = currentPosition + addition < BEGIN_OF_VIDEO_TIME
+                            ? BEGIN_OF_VIDEO_TIME : currentPosition + addition;
+        }
+
+        mediaPlayer.seekTo(currentPosition);
+
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        return mediaPlayer.getDuration();
     }
 }

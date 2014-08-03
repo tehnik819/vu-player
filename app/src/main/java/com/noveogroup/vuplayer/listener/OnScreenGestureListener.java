@@ -5,16 +5,15 @@
 package com.noveogroup.vuplayer.listener;
 
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.noveogroup.vuplayer.ScreenAction;
+import com.noveogroup.vuplayer.enumeration.ScreenAction;
 
-public final class ScreenGestureListener extends GestureDetector.SimpleOnGestureListener {
+public final class OnScreenGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     public static final String DEBUG_TAG = "VuPlayer.DEBUG_SCREEN_GESTURE_LISTENER";
-    public static final float SCROLL_MAX_COSINE = 0.97f;
+    public static final float SCROLL_MAX_COSINE = 0.95f;
 
     private OnScreenActionListener onScreenActionListener;
     private int width;
@@ -23,7 +22,7 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
         void performAction(ScreenAction screenAction, float distance);
     }
 
-    public ScreenGestureListener(OnScreenActionListener onScreenActionListener, int width) {
+    public OnScreenGestureListener(OnScreenActionListener onScreenActionListener, int width) {
         this.onScreenActionListener = onScreenActionListener;
         this.width = width;
     }
@@ -56,11 +55,7 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
         if (horizontalCosineFromStart > SCROLL_MAX_COSINE
                                                || -horizontalCosineFromStart > SCROLL_MAX_COSINE) {
             if (horizontalCosine > SCROLL_MAX_COSINE || -horizontalCosine > SCROLL_MAX_COSINE) {
-                if (distanceX < 0) {
-                    onScreenActionListener.performAction(ScreenAction.SEEK_FORWARD, -distanceX);
-                } else {
-                    onScreenActionListener.performAction(ScreenAction.SEEK_BACKWARD, distanceX);
-                }
+                onScreenActionListener.performAction(ScreenAction.SEEK_TO_ACTION, -distanceX);
             }
             return true;
         }
@@ -82,30 +77,6 @@ public final class ScreenGestureListener extends GestureDetector.SimpleOnGesture
                     return true;
                 }
                 onScreenActionListener.performAction(ScreenAction.VOLUME_CHANGE, distanceY);
-//                if (distanceY > 0) {
-//                    if (event2.getX() < ((float) width) / 3) {
-//                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_UP, distanceY);
-//                        return true;
-//                    }
-//                    if (event2.getX() < ((float) width) / 3 * 2) {
-//                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_UP, distanceY);
-//                        return true;
-//                    }
-//                    onScreenActionListener.performAction(ScreenAction.VOLUME_UP, distanceY);
-//                } else {
-//                    if (event2.getX() < ((float) width) / 3) {
-//                        onScreenActionListener.performAction(ScreenAction.BRIGHTNESS_DOWN,
-//                                                             -distanceY);
-//                        return true;
-//                    }
-//                    if (event2.getX() < ((float) width) / 3 * 2) {
-//                        onScreenActionListener.performAction(ScreenAction.SUBTITLES_DOWN,
-//                                                             -distanceY);
-//                        return true;
-//                    }
-//                    onScreenActionListener.performAction(ScreenAction.VOLUME_DOWN, -distanceY);
-//                }
-
             }
         }
 

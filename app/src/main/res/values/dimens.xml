@@ -3,5 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="control_buttons_text_size">20sp</dimen>
-    <dimen name="screen_action_text_size">20sp</dimen>
+    <dimen name="screen_action_text_size">40sp</dimen>
+    <dimen name="v_scroll_bar_length">200dp</dimen>
+    <dimen name="h_scroll_bar_step">5dp</dimen>
 </resources>

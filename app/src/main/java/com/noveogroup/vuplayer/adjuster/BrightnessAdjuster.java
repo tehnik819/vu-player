@@ -2,13 +2,11 @@
  * Copyright © 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.util;
+package com.noveogroup.vuplayer.adjuster;
 
-import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -17,21 +15,28 @@ public class BrightnessAdjuster {
     public final static String ERROR_TAG = "VuPlayer.ERROR_BRIGHTNESS_ADJUSTER";
     public final static String DEBUG_TAG = "VuPlayer.DEBUG_BRIGHTNESS_ADJUSTER";
 
-    public final static float BRIGHTNESS_MIN = 0.02f;
+    public final static float BRIGHTNESS_MIN = 0.01f;
 
-    private static int savedBrightness;
-    private static int savedBrightnessMode;
+    private static BrightnessAdjuster brightnessAdjuster;
+    private int savedBrightness;
+    private int savedBrightnessMode;
+    private ContentResolver contentResolver;
 
-    private BrightnessAdjuster() {
-        throw new UnsupportedOperationException("BrightnessAdjuster instance can not be created.");
+    private BrightnessAdjuster(ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
     }
 
-    public static void setManualMode(ContentResolver contentResolver) {
+    public static BrightnessAdjuster getInstance(ContentResolver contentResolver) {
+            return brightnessAdjuster = brightnessAdjuster == null ?
+                                      new BrightnessAdjuster(contentResolver) : brightnessAdjuster;
+    }
+
+    public void setManualMode() {
         Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
                                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
     }
 
-    public static void saveSystemSettings(ContentResolver contentResolver) {
+    public void saveSystemSettings() {
         try {
             savedBrightnessMode = Settings.System.getInt(contentResolver,
                     Settings.System.SCREEN_BRIGHTNESS_MODE);
@@ -39,11 +44,10 @@ public class BrightnessAdjuster {
             Log.e(ERROR_TAG, "Can not access system brightness mode.");
         }
 
-        savedBrightness = getSystemBrightnessInt(contentResolver);
+        savedBrightness = getSystemBrightnessInt();
     }
 
-    public static float setBrightness(ContentResolver contentResolver,
-                                           Window window, float newBrightness) {
+    public float setBrightness(Window window, float newBrightness) {
         if(newBrightness < 0 || newBrightness > 1) {
             return -1;
         }
@@ -56,7 +60,7 @@ public class BrightnessAdjuster {
         return newBrightness;
     }
 
-    private static int getSystemBrightnessInt(ContentResolver contentResolver) {
+    private int getSystemBrightnessInt() {
         int brightness = 0;
 
         try {
@@ -69,15 +73,14 @@ public class BrightnessAdjuster {
         return brightness;
     }
 
-    public static void restoreSavedSettings(ContentResolver contentResolver, Window window) {
-        setBrightness(contentResolver, window, savedBrightness);
+    public void restoreSavedSettings() {
+        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, savedBrightness);
         Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
                                savedBrightnessMode);
     }
 
-    public static float addBrightness(ContentResolver contentResolver, Window window,
-                                                                                 float addition) {
-        float brightness = (getSystemBrightnessInt(contentResolver) / (float) 255 - BRIGHTNESS_MIN)
+    public float addBrightness(Window window, float addition) {
+        float brightness = (getSystemBrightnessInt() / (float) 255 - BRIGHTNESS_MIN)
                             / (1 - BRIGHTNESS_MIN);
 //        Log.d(DEBUG_TAG, String.format("%f", brightness));
         if (addition > 0) {
@@ -86,6 +89,6 @@ public class BrightnessAdjuster {
             brightness = brightness + addition < 0 ? 0 : brightness + addition;
         }
 
-        return setBrightness(contentResolver, window, brightness);
+        return setBrightness(window, brightness);
     }
 }

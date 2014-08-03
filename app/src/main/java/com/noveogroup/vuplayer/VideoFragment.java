@@ -4,54 +4,94 @@
 
 package com.noveogroup.vuplayer;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.noveogroup.vuplayer.util.BrightnessAdjuster;
+import com.noveogroup.vuplayer.adjuster.AudioAdjuster;
+import com.noveogroup.vuplayer.adjuster.BrightnessAdjuster;
+import com.noveogroup.vuplayer.enumeration.ScreenAction;
+import com.noveogroup.vuplayer.listener.OnScreenGestureListener;
+import com.noveogroup.vuplayer.listener.OnScreenTouchListener;
+import com.noveogroup.vuplayer.util.TimeConverter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class VideoFragment extends Fragment {
-    private int seekTime;
-    private Properties properties;
-    private String viewSource;
-
-    private VideoPlayer videoPlayer;
-    private VideoController videoController;
+public class VideoFragment extends Fragment
+                           implements OnScreenGestureListener.OnScreenActionListener {
 
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
     private final static String TAG = "VideoFragment";
 
+    private int seekTime;
+    private Properties properties;
+    private String viewSource;
+    private BrightnessAdjuster brightnessAdjuster;
+    private AudioAdjuster audioAdjuster;
+    private int hScrollBarStepPixels;
+    private int vScrollBarLengthPixels;
+
+    private VideoPlayer videoPlayer;
+    private TextView screenActionTextView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
         initProperties();
-        View v = inflater.inflate(R.layout.fragment_video, container, false);
+        View view = inflater.inflate(R.layout.fragment_video, container, false);
 
-        videoPlayer = (VideoPlayer) v.findViewById(R.id.video_player);
-        videoController = (VideoController) v.findViewById(R.id.video_controller);
+//        Set up brightness control.
+        brightnessAdjuster = BrightnessAdjuster.getInstance(getActivity().getContentResolver());
+        brightnessAdjuster.saveSystemSettings();
+        brightnessAdjuster.setManualMode();
+//        Set up AudioAdjuster.
+        audioAdjuster = AudioAdjuster.getInstance((AudioManager) getActivity()
+                                                  .getSystemService(Context.AUDIO_SERVICE));
+//        Get volume and brightness scroll bars length in pixels.
+        hScrollBarStepPixels = getResources().getDimensionPixelSize(R.dimen.h_scroll_bar_step);
+//        Get seek scroll bar step in pixels.
+        vScrollBarLengthPixels = getResources().getDimensionPixelSize(R.dimen.v_scroll_bar_length);
 
-//        Save system settings in order to restore it later.
-        BrightnessAdjuster.saveSystemSettings(getActivity().getContentResolver());
-//        Set manual brightness control.
-        BrightnessAdjuster.setManualMode(getActivity().getContentResolver());
+        view.findViewById(R.id.fragment_video).setOnTouchListener(
+                                new OnScreenTouchListener(getActivity(), this, getScreenWidth()) {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    screenActionTextView = screenActionTextView == null
+                            ? (TextView) getActivity().findViewById(R.id.screen_action_text_view)
+                            : screenActionTextView;
+                    if(screenActionTextView != null) {
+                        super.onTouch(view, motionEvent);
+                        screenActionTextView.setVisibility(View.INVISIBLE);
+                        return true;
+                    }
+                }
 
-        videoPlayer.setVideoController(videoController);
+                return super.onTouch(view, motionEvent);
+            }
+        });
+
+        videoPlayer = (VideoPlayer) view.findViewById(R.id.video_player);
+        videoPlayer.setVideoController((VideoController) view.findViewById(R.id.video_controller));
         videoPlayer.setDataSource(viewSource);
         videoPlayer.setSeekTime(seekTime);
         videoPlayer.prepare();
         videoPlayer.play();
 
-        return v;
+        return view;
     }
 
     @Override
@@ -68,12 +108,6 @@ public class VideoFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
         outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        videoPlayer.release();
     }
 
     private void initProperties() {
@@ -94,16 +128,62 @@ public class VideoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        videoPlayer.release();
         videoPlayer = null;
-        videoController = null;
+        screenActionTextView = null;
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "OnPause");
 
-//        Restore saved system settings.
-        BrightnessAdjuster.restoreSavedSettings(getActivity().getContentResolver(),
-                                                  getActivity().getWindow());
+//        Restore saved system brightness settings.
+        brightnessAdjuster.restoreSavedSettings();
+    }
+
+//    Override the method from OnScreenGestureListener.
+    @Override
+    public void performAction(ScreenAction screenAction, float distance) {
+        switch (screenAction) {
+            case SWITCH_ON_SINGLE_TAP:
+                videoPlayer.changeControllerVisibility();
+            case BRIGHTNESS_CHANGE:
+                float distanceRatio = distance / vScrollBarLengthPixels;
+                float brightness = brightnessAdjuster.addBrightness(getActivity().getWindow(), distanceRatio);
+                showScreenActionMessage(String.format("Brightness: %d%%",
+                        Math.round(brightness * 100)));
+                break;
+            case VOLUME_CHANGE:
+                distanceRatio = distance / vScrollBarLengthPixels;
+                float volume = audioAdjuster.addVolume(distanceRatio);
+                showScreenActionMessage(String.format("Volume: %d%%",
+                        Math.round(volume * 100)));
+                break;
+            case SEEK_TO_ACTION:
+                int currentPosition = videoPlayer.addTime((int) (distance / hScrollBarStepPixels * 1000));
+                int duration = videoPlayer.getDuration();
+                showScreenActionMessage(TimeConverter.convertToString(currentPosition, duration));
+                break;
+            default:
+                showScreenActionMessage(screenAction.toString());
+        }
+    }
+
+    private void showScreenActionMessage(String message) {
+        screenActionTextView = screenActionTextView == null
+                ? (TextView) getActivity().findViewById(R.id.screen_action_text_view)
+                : screenActionTextView;
+        if(screenActionTextView != null) {
+            screenActionTextView.setText(message);
+            screenActionTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+        private int getScreenWidth() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        return displayMetrics.widthPixels;
     }
 }
