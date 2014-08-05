@@ -4,22 +4,13 @@
 
 package com.noveogroup.vuplayer;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.TextView;
 
-import com.noveogroup.vuplayer.adjuster.AudioAdjuster;
-import com.noveogroup.vuplayer.enumeration.ScreenAction;
-import com.noveogroup.vuplayer.listener.OnScreenGestureListener;
-import com.noveogroup.vuplayer.adjuster.BrightnessAdjuster;
+import com.noveogroup.vuplayer.fragment.Library;
 
 public class MainActivity extends ActionBarActivity {
 

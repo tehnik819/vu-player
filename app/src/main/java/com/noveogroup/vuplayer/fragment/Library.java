@@ -2,7 +2,7 @@
  * Copyright © 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer;
+package com.noveogroup.vuplayer.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.noveogroup.vuplayer.R;
 
 public class Library extends Fragment {
     private Button playVideoBtn;

@@ -6,4 +6,5 @@
     <dimen name="screen_action_text_size">40sp</dimen>
     <dimen name="v_scroll_bar_length">200dp</dimen>
     <dimen name="h_scroll_bar_step">5dp</dimen>
+    <dimen name="subtitles_bottom_margin">20dp</dimen>
 </resources>

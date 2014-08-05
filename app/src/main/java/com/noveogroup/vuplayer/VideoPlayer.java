@@ -68,6 +68,7 @@ public class VideoPlayer extends SurfaceView {
         public void surfaceDestroyed(SurfaceHolder holder) {
             Log.d(TAG, "surfaceDestroyed()");
             mSurfaceHolder = null;
+            mVideoController = null;
             mediaPlayer.pause();
             currentState = STATE_IDLE;
         }
@@ -111,13 +112,13 @@ public class VideoPlayer extends SurfaceView {
         }
     }
 
-    public void release() {
-        mSurfaceHolder = null;
-        mVideoController = null;
-        mediaPlayer.release();
-        mediaPlayer = null;
-        mDataSource = null;
-    }
+//    public void release() {
+//        mSurfaceHolder = null;
+//        mVideoController = null;
+//        mediaPlayer.release();
+//        mediaPlayer = null;
+//        mDataSource = null;
+//    }
 
     public void play() {
         if(!mediaPlayer.isPlaying()) {

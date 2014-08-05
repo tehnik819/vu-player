@@ -2,21 +2,28 @@
  * Copyright © 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer;
+package com.noveogroup.vuplayer.fragment;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.SubtitlesView;
+import com.noveogroup.vuplayer.VideoController;
+import com.noveogroup.vuplayer.VideoPlayer;
 import com.noveogroup.vuplayer.adjuster.AudioAdjuster;
 import com.noveogroup.vuplayer.adjuster.BrightnessAdjuster;
 import com.noveogroup.vuplayer.enumeration.ScreenAction;
@@ -24,10 +31,19 @@ import com.noveogroup.vuplayer.listener.OnScreenGestureListener;
 import com.noveogroup.vuplayer.listener.OnScreenTouchListener;
 import com.noveogroup.vuplayer.util.TimeConverter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.logging.LogRecord;
+
+import subtitleFile.Caption;
+import subtitleFile.FormatSRT;
+import subtitleFile.TimedTextObject;
+
 
 public class VideoFragment extends Fragment
                            implements OnScreenGestureListener.OnScreenActionListener {
@@ -35,6 +51,7 @@ public class VideoFragment extends Fragment
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
     private final static String TAG = "VideoFragment";
+    public final static int SUBTITLES_CHECK_DELAY = 100;
 
     private int seekTime;
     private Properties properties;
@@ -43,9 +60,15 @@ public class VideoFragment extends Fragment
     private AudioAdjuster audioAdjuster;
     private int hScrollBarStepPixels;
     private int vScrollBarLengthPixels;
+    private Handler handler;
+    private Runnable subtitlesRunnable;
+    TimedTextObject subtitlesTextObject;
 
     private VideoPlayer videoPlayer;
     private TextView screenActionTextView;
+    private SubtitlesView subtitlesView;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -84,12 +107,36 @@ public class VideoFragment extends Fragment
             }
         });
 
+//        Initialize videoPlayer.
         videoPlayer = (VideoPlayer) view.findViewById(R.id.video_player);
         videoPlayer.setVideoController((VideoController) view.findViewById(R.id.video_controller));
         videoPlayer.setDataSource(viewSource);
         videoPlayer.setSeekTime(seekTime);
+
+//        Initialize subtitles display.
+        String srtFilename = viewSource.replace(".mp4", ".srt");
+        File subtitles_file = new File(srtFilename);
+
+        try {
+            FileInputStream stream = new FileInputStream(subtitles_file);
+            subtitlesTextObject = new FormatSRT().parseFile(srtFilename, stream);
+            stream.close();
+
+            Log.d(TAG, String.format("File: %s", subtitlesTextObject.fileName));
+            Log.d(TAG, String.format("Size: %d", subtitlesTextObject.captions.values().size()));
+
+        } catch (IOException exception) {
+            Log.e(TAG, "Can not read subtitles file.");
+        }
+
+        subtitlesView = (SubtitlesView) view.findViewById(R.id.subtitles_view);
+        subtitlesView.setText("Ok.");
+
+
+//        Run videoPlayer.
         videoPlayer.prepare();
         videoPlayer.play();
+        runSubtitlesLoop();
 
         return view;
     }
@@ -115,22 +162,22 @@ public class VideoFragment extends Fragment
         try {
             InputStream rawResources = getResources().openRawResource(R.raw.config);
             properties.load(rawResources);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, e.getMessage(),e);
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage(),e);
         }
         seekTime = Integer.valueOf(properties.getProperty("seek_time", String.valueOf(5000)));
-        viewSource = Environment.getExternalStorageDirectory().toString() + "/test.mp4";
+        viewSource = Environment.getExternalStorageDirectory().toString()
+                + getResources().getString(R.string.filename);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        videoPlayer.release();
+//        videoPlayer.release();
         videoPlayer = null;
         screenActionTextView = null;
+        subtitlesView = null;
     }
 
     @Override
@@ -140,9 +187,16 @@ public class VideoFragment extends Fragment
 
 //        Restore saved system brightness settings.
         brightnessAdjuster.restoreSavedSettings();
+        handler.removeCallbacks(subtitlesRunnable);
     }
 
-//    Override the method from OnScreenGestureListener.
+    @Override
+    public void onResume() {
+        super.onResume();
+        handler.post(subtitlesRunnable);
+    }
+
+    //    Override the method from OnScreenGestureListener.
     @Override
     public void performAction(ScreenAction screenAction, float distance) {
         switch (screenAction) {
@@ -185,5 +239,43 @@ public class VideoFragment extends Fragment
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         return displayMetrics.widthPixels;
+    }
+
+    private void runSubtitlesLoop() {
+        handler = new Handler();
+
+        subtitlesRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if(videoPlayer.isPlaying()) {
+                    int currentPosition = videoPlayer.getCurrentPosition();
+                    Collection<Caption> subtitles =  subtitlesTextObject.captions.values();
+                    for(Caption caption : subtitles) {
+                        if(currentPosition >= caption.start.getMilliseconds()
+                                && currentPosition <= caption.end.getMilliseconds()) {
+                            subtitlesView.setText(Html.fromHtml(caption.content));
+                            subtitlesView.setClickable(true);
+                            return;
+                        }
+                    }
+                    subtitlesView.setText("");
+                    subtitlesView.setClickable(false);
+                }
+            }
+        };
+
+        new Thread() {
+            @Override
+            public void run() {
+                while(true) {
+                    handler.post(subtitlesRunnable);
+                    try {
+                        sleep(SUBTITLES_CHECK_DELAY);
+                    } catch (InterruptedException exception) {
+                        Log.e(TAG, "Subtitles thread has been interrupted.");
+                    }
+                }
+            }
+        }.start();
     }
 }

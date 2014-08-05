@@ -10,4 +10,6 @@
     <string name="control_backward">Backward</string>
     <string name="control_forward">Forward</string>
 
+    <string name="filename">/test.mp4</string>
+
 </resources>
