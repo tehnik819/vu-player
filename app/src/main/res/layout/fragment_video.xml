@@ -24,7 +24,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <com.noveogroup.vuplayer.SubtitlesView
+    <com.noveogroup.vuplayer.subtitles.SubtitlesView
         android:id="@+id/subtitles_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

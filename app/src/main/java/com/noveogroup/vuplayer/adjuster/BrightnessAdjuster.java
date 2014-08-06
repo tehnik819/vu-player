@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
 package com.noveogroup.vuplayer.adjuster;
@@ -17,7 +17,7 @@ public class BrightnessAdjuster {
 
     public final static float BRIGHTNESS_MIN = 0.01f;
 
-    private static BrightnessAdjuster brightnessAdjuster;
+    private static BrightnessAdjuster brightnessAdjuster = null;
     private int savedBrightness;
     private int savedBrightnessMode;
     private ContentResolver contentResolver;

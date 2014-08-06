@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
 package com.noveogroup.vuplayer.enumeration;

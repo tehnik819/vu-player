@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright © 2014 Sergey Bragin and Alexandr Valov
+ * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
 package com.noveogroup.vuplayer.adjuster;
@@ -8,7 +8,7 @@ import android.media.AudioManager;
 
 public class AudioAdjuster {
 
-    private static AudioAdjuster audioAdjuster;
+    private static AudioAdjuster audioAdjuster = null;
     private AudioManager audioManager;
     private int maxVolume;
 

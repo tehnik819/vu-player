@@ -1,4 +1,8 @@
-package com.noveogroup.vuplayer;
+/*******************************************************************************
+ * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
+ ******************************************************************************/
+
+package com.noveogroup.vuplayer.subtitles;
 
 import android.content.Context;
 import android.util.AttributeSet;
