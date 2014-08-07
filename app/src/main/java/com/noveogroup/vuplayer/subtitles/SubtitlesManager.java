@@ -13,6 +13,7 @@ import com.noveogroup.vuplayer.VideoPlayer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import subtitleFile.Caption;
@@ -40,18 +41,21 @@ public class SubtitlesManager {
 
     public void loadSubtitles(String videoFilename) {
 
+//        String[] subtitlesFilenames = FileManager.getFilesByStart()
         String srtFilename = videoFilename.replace(".mp4", ".srt");
-        File subtitles_file = new File(srtFilename);
+        System.out.println(srtFilename);
+        File subtitlesFile = new File(srtFilename);
 
         try {
-            FileInputStream stream = new FileInputStream(subtitles_file);
-            subtitlesTextObject = new FormatSRT().parseFile(srtFilename, stream);
+            FileInputStream stream = new FileInputStream(subtitlesFile);
+            Log.e(TAG, "Trying to load...");
+            subtitlesTextObject = SubtitlesLoader.parseFile(srtFilename, stream);
             stream.close();
 
             Log.d(TAG, String.format("File: %s", subtitlesTextObject.fileName));
             Log.d(TAG, String.format("Size: %d", subtitlesTextObject.captions.values().size()));
 
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             Log.e(TAG, "Can not load subtitles file.");
         }
     }
