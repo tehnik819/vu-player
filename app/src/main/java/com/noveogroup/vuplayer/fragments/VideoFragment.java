@@ -35,7 +35,8 @@ import java.util.Properties;
 
 
 public class VideoFragment extends Fragment
-                           implements OnScreenGestureListener.OnScreenActionListener {
+                           implements OnScreenGestureListener.OnScreenActionListener,
+                                      SubtitlesView.OnSubtitlesTouchListener {
 
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
@@ -101,8 +102,10 @@ public class VideoFragment extends Fragment
         videoPlayer.prepare();
 
 //        Initialize subtitles display.
-        subtitlesManager = new SubtitlesManager(videoPlayer,
-                                           (SubtitlesView) view.findViewById(R.id.subtitles_view));
+        SubtitlesView subtitlesView = (SubtitlesView) view.findViewById(R.id.subtitles_view);
+        subtitlesView.setClickable(true);
+        subtitlesView.setOnSubtitlesTouchListener(this);
+        subtitlesManager = new SubtitlesManager(videoPlayer, subtitlesView);
         subtitlesManager.loadSubtitles(viewSource);
 
         return view;
@@ -163,7 +166,7 @@ public class VideoFragment extends Fragment
         subtitlesManager.runSubtitling();
     }
 
-    //    Override the method from OnScreenGestureListener.
+//    Override the method from OnScreenGestureListener.
     @Override
     public void performAction(ScreenAction screenAction, float distance) {
         switch (screenAction) {
@@ -186,6 +189,9 @@ public class VideoFragment extends Fragment
                 int duration = videoPlayer.getDuration();
                 showScreenActionMessage(TimeConverter.convertToString(currentPosition, duration));
                 break;
+            case SUBTITLES_CHANGE:
+                subtitlesManager.changeSubtitling(distance > 0);
+                break;
             default:
                 showScreenActionMessage(screenAction.toString());
         }
@@ -206,5 +212,10 @@ public class VideoFragment extends Fragment
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         return displayMetrics.widthPixels;
+    }
+
+    @Override
+    public void onSubtitlesTouch() {
+        videoPlayer.pause();
     }
 }

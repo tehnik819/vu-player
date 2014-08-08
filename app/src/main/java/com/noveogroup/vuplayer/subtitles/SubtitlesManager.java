@@ -6,7 +6,9 @@ package com.noveogroup.vuplayer.subtitles;
 
 import android.os.Handler;
 import android.text.Html;
+import android.text.SpannableString;
 import android.util.Log;
+import android.view.View;
 
 import com.noveogroup.vuplayer.FileManager;
 import com.noveogroup.vuplayer.VideoPlayer;
@@ -29,8 +31,9 @@ public class SubtitlesManager {
     private Handler handler = null;
     private Runnable subtitlingRunnable;
     private Thread subtitlingThread;
-    private TimedTextObject currentSubTextObject;
+    private volatile TimedTextObject currentSubTextObject;
     private ArrayList<TimedTextObject> subTextObjects;
+    private int currentSubIndex = 0;
 
     private VideoPlayer videoPlayer;
     private SubtitlesView subtitlesView;
@@ -75,11 +78,18 @@ public class SubtitlesManager {
                 Log.e(TAG, String.format("Can not load subtitles file %s.", pathname));
             }
         }
-        currentSubTextObject = subTextObjects.size() != 0 ? subTextObjects.get(0) : null;
     }
 
     public void runSubtitling() {
         handler = new Handler();
+
+        if (currentSubTextObject == null) {
+            if(subTextObjects.size() != 0) {
+                currentSubTextObject = subTextObjects.get(currentSubIndex);
+            } else {
+                return;
+            }
+        }
 
         subtitlingRunnable = new Runnable() {
             @Override
@@ -91,12 +101,14 @@ public class SubtitlesManager {
                         if(currentPosition >= caption.start.getMilliseconds()
                                 && currentPosition <= caption.end.getMilliseconds()) {
                             subtitlesView.setText(Html.fromHtml(caption.content));
-                            subtitlesView.setClickable(true);
+//                            subtitlesView.setClickable(true);
+//                            subtitlesView.setVisibility(View.VISIBLE);
                             return;
                         }
                     }
                     subtitlesView.setText("");
-                    subtitlesView.setClickable(false);
+//                    subtitlesView.setClickable(false);
+//                    subtitlesView.setVisibility(View.INVISIBLE);
                 }
             }
         };
@@ -126,7 +138,24 @@ public class SubtitlesManager {
     }
 
     public void stopSubtitling() {
-        handler.removeCallbacks(subtitlingRunnable);
-        subtitlingThread.interrupt();
+        if(subtitlingRunnable != null) {
+            handler.removeCallbacks(subtitlingRunnable);
+            subtitlingRunnable = null;
+        }
+        if(subtitlingThread != null) {
+            subtitlingThread.interrupt();
+            subtitlingThread = null;
+        }
+        subtitlesView.setText("");
+    }
+
+    public void changeSubtitling(boolean doSwitchOn) {
+        if (doSwitchOn) {
+            if(subtitlingThread == null) {
+                runSubtitling();
+            }
+        } else {
+            stopSubtitling();
+        }
     }
 }

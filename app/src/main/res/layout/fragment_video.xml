@@ -26,12 +26,12 @@
 
     <com.noveogroup.vuplayer.subtitles.SubtitlesView
         android:id="@+id/subtitles_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/video_controller"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/subtitles_bottom_margin"
         android:textColor="@android:color/white"
+        android:gravity="center"
         android:editable="false"
         android:textSize="@dimen/subtitles_text_size"
         />
