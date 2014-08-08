@@ -8,16 +8,17 @@ import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 
+import com.noveogroup.vuplayer.FileManager;
 import com.noveogroup.vuplayer.VideoPlayer;
+import com.noveogroup.vuplayer.utils.PathnameHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import subtitleFile.Caption;
-import subtitleFile.FormatSRT;
 import subtitleFile.TimedTextObject;
 
 public class SubtitlesManager {
@@ -28,7 +29,8 @@ public class SubtitlesManager {
     private Handler handler = null;
     private Runnable subtitlingRunnable;
     private Thread subtitlingThread;
-    private TimedTextObject subtitlesTextObject;
+    private TimedTextObject currentSubTextObject;
+    private ArrayList<TimedTextObject> subTextObjects;
 
     private VideoPlayer videoPlayer;
     private SubtitlesView subtitlesView;
@@ -39,25 +41,41 @@ public class SubtitlesManager {
         this.subtitlesView = subtitlesView;
     }
 
-    public void loadSubtitles(String videoFilename) {
+    public void loadSubtitles(String absVideoPathname) {
 
-//        String[] subtitlesFilenames = FileManager.getFilesByStart()
-        String srtFilename = videoFilename.replace(".mp4", ".srt");
-        System.out.println(srtFilename);
-        File subtitlesFile = new File(srtFilename);
-
-        try {
-            FileInputStream stream = new FileInputStream(subtitlesFile);
-            Log.e(TAG, "Trying to load...");
-            subtitlesTextObject = SubtitlesLoader.parseFile(srtFilename, stream);
-            stream.close();
-
-            Log.d(TAG, String.format("File: %s", subtitlesTextObject.fileName));
-            Log.d(TAG, String.format("Size: %d", subtitlesTextObject.captions.values().size()));
-
-        } catch (Exception exception) {
-            Log.e(TAG, "Can not load subtitles file.");
+        ArrayList<String> subPathnames = new ArrayList<String>();
+        for (String extension : SubtitlesLoader.EXTENSIONS) {
+            String absPathname = PathnameHandler.getWithReplacedExtension(absVideoPathname,
+                                                                          extension);
+            subPathnames.addAll(FileManager.getFiles(absPathname));
         }
+        Collections.sort(subPathnames);
+        ArrayList<String> subPathnamesAdditional = new ArrayList<String>();
+        for (String extension : SubtitlesLoader.EXTENSIONS) {
+            String absPathnamePattern = PathnameHandler.getWithRemovedExtension(absVideoPathname)
+                                        + ".*." + extension;
+            subPathnamesAdditional.addAll(FileManager.getFiles(absPathnamePattern));
+        }
+        Collections.sort(subPathnamesAdditional);
+        subPathnames.addAll(subPathnamesAdditional);
+
+        subTextObjects = new ArrayList<TimedTextObject>();
+        for (String pathname : subPathnames) {
+            File subtitlesFile = new File(pathname);
+
+            try {
+                FileInputStream stream = new FileInputStream(subtitlesFile);
+                TimedTextObject subTextObject = SubtitlesLoader.parseFile(pathname, stream);
+                stream.close();
+                if(subTextObject != null) {
+                    subTextObjects.add(subTextObject);
+                }
+
+            } catch (Exception exception) {
+                Log.e(TAG, String.format("Can not load subtitles file %s.", pathname));
+            }
+        }
+        currentSubTextObject = subTextObjects.size() != 0 ? subTextObjects.get(0) : null;
     }
 
     public void runSubtitling() {
@@ -68,7 +86,7 @@ public class SubtitlesManager {
             public void run() {
                 if(videoPlayer.isPlaying()) {
                     int currentPosition = videoPlayer.getCurrentPosition();
-                    Collection<Caption> subtitles =  subtitlesTextObject.captions.values();
+                    Collection<Caption> subtitles =  currentSubTextObject.captions.values();
                     for(Caption caption : subtitles) {
                         if(currentPosition >= caption.start.getMilliseconds()
                                 && currentPosition <= caption.end.getMilliseconds()) {

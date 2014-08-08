@@ -10,7 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.noveogroup.vuplayer.fragment.Library;
+import com.noveogroup.vuplayer.fragments.Library;
 
 public class MainActivity extends ActionBarActivity {
 

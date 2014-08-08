@@ -33,14 +33,15 @@
         android:layout_marginBottom="@dimen/subtitles_bottom_margin"
         android:textColor="@android:color/white"
         android:editable="false"
+        android:textSize="@dimen/subtitles_text_size"
         />
 
     <TextView
         android:id="@+id/screen_action_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/subtitles_view"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:textSize="@dimen/screen_action_text_size"
         android:textColor="@android:color/white"
         />

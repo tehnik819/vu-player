@@ -2,7 +2,7 @@
  * Copyright © 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.util;
+package com.noveogroup.vuplayer.utils;
 
 public final class TimeConverter {
 

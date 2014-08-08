@@ -2,7 +2,7 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.adjuster;
+package com.noveogroup.vuplayer.adjusters;
 
 import android.media.AudioManager;
 

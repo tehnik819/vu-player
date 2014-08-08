@@ -2,13 +2,13 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.listener;
+package com.noveogroup.vuplayer.listeners;
 
 import android.util.FloatMath;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.noveogroup.vuplayer.enumeration.ScreenAction;
+import com.noveogroup.vuplayer.enumerations.ScreenAction;
 
 public final class OnScreenGestureListener extends GestureDetector.SimpleOnGestureListener {
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.fragment;
+package com.noveogroup.vuplayer.fragments;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -22,12 +22,12 @@ import com.noveogroup.vuplayer.subtitles.SubtitlesManager;
 import com.noveogroup.vuplayer.subtitles.SubtitlesView;
 import com.noveogroup.vuplayer.VideoController;
 import com.noveogroup.vuplayer.VideoPlayer;
-import com.noveogroup.vuplayer.adjuster.AudioAdjuster;
-import com.noveogroup.vuplayer.adjuster.BrightnessAdjuster;
-import com.noveogroup.vuplayer.enumeration.ScreenAction;
-import com.noveogroup.vuplayer.listener.OnScreenGestureListener;
-import com.noveogroup.vuplayer.listener.OnScreenTouchListener;
-import com.noveogroup.vuplayer.util.TimeConverter;
+import com.noveogroup.vuplayer.adjusters.AudioAdjuster;
+import com.noveogroup.vuplayer.adjusters.BrightnessAdjuster;
+import com.noveogroup.vuplayer.enumerations.ScreenAction;
+import com.noveogroup.vuplayer.listeners.OnScreenGestureListener;
+import com.noveogroup.vuplayer.listeners.OnScreenTouchListener;
+import com.noveogroup.vuplayer.utils.TimeConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,7 +102,7 @@ public class VideoFragment extends Fragment
 
 //        Initialize subtitles display.
         subtitlesManager = new SubtitlesManager(videoPlayer,
-                (SubtitlesView) view.findViewById(R.id.subtitles_view));
+                                           (SubtitlesView) view.findViewById(R.id.subtitles_view));
         subtitlesManager.loadSubtitles(viewSource);
 
         return view;

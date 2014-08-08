@@ -2,7 +2,7 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.listener;
+package com.noveogroup.vuplayer.listeners;
 
 import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;

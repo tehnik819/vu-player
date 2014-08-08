@@ -2,7 +2,7 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer.fragment;
+package com.noveogroup.vuplayer.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
