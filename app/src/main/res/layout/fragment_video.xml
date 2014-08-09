@@ -32,7 +32,6 @@
         android:layout_marginBottom="@dimen/subtitles_bottom_margin"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:editable="false"
         android:textSize="@dimen/subtitles_text_size"
         />
 

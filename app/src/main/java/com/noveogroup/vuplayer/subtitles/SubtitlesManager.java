@@ -34,6 +34,7 @@ public class SubtitlesManager {
     private volatile TimedTextObject currentSubTextObject;
     private ArrayList<TimedTextObject> subTextObjects;
     private int currentSubIndex = 0;
+    private int position = -1;
 
     private VideoPlayer videoPlayer;
     private SubtitlesView subtitlesView;
@@ -94,8 +95,9 @@ public class SubtitlesManager {
         subtitlingRunnable = new Runnable() {
             @Override
             public void run() {
-                if(videoPlayer.isPlaying()) {
-                    int currentPosition = videoPlayer.getCurrentPosition();
+                int currentPosition = videoPlayer.getCurrentPosition();
+                if(position != currentPosition) {
+                    position = currentPosition;
                     Collection<Caption> subtitles =  currentSubTextObject.captions.values();
                     for(Caption caption : subtitles) {
                         if(currentPosition >= caption.start.getMilliseconds()

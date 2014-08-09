@@ -2,6 +2,9 @@
 <resources>
     <color name="background_library">#ffffb12b</color>
     <color name="control_background">#32000000</color>
+
     <color name="subtitles_selected_text">#000</color>
-    <color name="subtitles_selected_background">#00f</color>
+    <color name="subtitles_selected_background">#ff0</color>
+    <color name="subtitles_unselected_text">#fff</color>
+    <color name="subtitles_unselected_background">#00000000</color>
 </resources>

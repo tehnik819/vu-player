@@ -40,7 +40,14 @@ public class VideoPlayer extends SurfaceView {
     public static final int STATE_IDLE = 0;
     public static final int STATE_PLAY = 1;
     public static final int STATE_STOP = 2;
+    public static final int STATE_SOUGHT = 3;
     private static final String TAG = "VideoPlayer";
+
+    private OnChangeStateListener onChangeStateListener;
+
+    public interface OnChangeStateListener {
+        void onChangeState(int state);
+    }
 
     public VideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -128,6 +135,9 @@ public class VideoPlayer extends SurfaceView {
             fitToScreen();
             mediaPlayer.start();
             currentState = STATE_PLAY;
+            if (onChangeStateListener != null) {
+                onChangeStateListener.onChangeState(STATE_PLAY);
+            }
         }
     }
 
@@ -246,11 +256,18 @@ public class VideoPlayer extends SurfaceView {
         }
 
         mediaPlayer.seekTo(currentPosition);
+        if (onChangeStateListener != null) {
+            onChangeStateListener.onChangeState(STATE_SOUGHT);
+        }
 
         return mediaPlayer.getCurrentPosition();
     }
 
     public int getDuration() {
         return mediaPlayer.getDuration();
+    }
+
+    public void setOnChangeStateListener(OnChangeStateListener listener) {
+        onChangeStateListener = listener;
     }
 }

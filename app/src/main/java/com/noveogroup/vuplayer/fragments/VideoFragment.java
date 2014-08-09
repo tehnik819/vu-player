@@ -36,12 +36,12 @@ import java.util.Properties;
 
 public class VideoFragment extends Fragment
                            implements OnScreenGestureListener.OnScreenActionListener,
-                                      SubtitlesView.OnSubtitlesTouchListener {
+                                      SubtitlesView.OnSubtitlesTouchListener,
+                                      VideoPlayer.OnChangeStateListener {
 
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
     private final static String TAG = "VideoFragment";
-//    public final static int SUBTITLES_CHECK_DELAY = 100;
 
     private int seekTime;
     private Properties properties;
@@ -54,7 +54,8 @@ public class VideoFragment extends Fragment
     private SubtitlesManager subtitlesManager;
     private VideoPlayer videoPlayer;
     private TextView screenActionTextView;
-
+    private SubtitlesView subtitlesView;
+    private VideoController videoController;
 
 
     @Override
@@ -75,6 +76,7 @@ public class VideoFragment extends Fragment
 //        Get seek scroll bar step in pixels.
         vScrollBarLengthPixels = getResources().getDimensionPixelSize(R.dimen.v_scroll_bar_length);
 
+//        Set up onTouch listener.
         view.findViewById(R.id.fragment_video).setOnTouchListener(
                                 new OnScreenTouchListener(getActivity(), this, getScreenWidth()) {
             @Override
@@ -96,13 +98,15 @@ public class VideoFragment extends Fragment
 
 //        Initialize videoPlayer.
         videoPlayer = (VideoPlayer) view.findViewById(R.id.video_player);
-        videoPlayer.setVideoController((VideoController) view.findViewById(R.id.video_controller));
+        videoController = (VideoController) view.findViewById(R.id.video_controller);
+        videoPlayer.setVideoController(videoController);
         videoPlayer.setDataSource(viewSource);
         videoPlayer.setSeekTime(seekTime);
+        videoPlayer.setOnChangeStateListener(this);
         videoPlayer.prepare();
 
 //        Initialize subtitles display.
-        SubtitlesView subtitlesView = (SubtitlesView) view.findViewById(R.id.subtitles_view);
+        subtitlesView = (SubtitlesView) view.findViewById(R.id.subtitles_view);
         subtitlesView.setClickable(true);
         subtitlesView.setOnSubtitlesTouchListener(this);
         subtitlesManager = new SubtitlesManager(videoPlayer, subtitlesView);
@@ -214,8 +218,21 @@ public class VideoFragment extends Fragment
         return displayMetrics.widthPixels;
     }
 
+//    Override method of onSubtitlesTouchListener.
     @Override
     public void onSubtitlesTouch() {
-        videoPlayer.pause();
+        if (videoPlayer.isPlaying()) {
+            videoPlayer.pause();
+            videoController.updatePausePlay(VideoPlayer.STATE_STOP);
+        }
+    }
+
+//    Override method of onChangeStateListener.
+    @Override
+    public void onChangeState(int state) {
+        if(state == VideoPlayer.STATE_PLAY || state == VideoPlayer.STATE_SOUGHT) {
+            subtitlesView.resetSelections();
+        }
+
     }
 }
