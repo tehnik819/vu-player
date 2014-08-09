@@ -21,11 +21,13 @@ public class VideoPlayer extends SurfaceView {
     public static final int REPEAT_MODE_PLAYLIST = 2;
 
     private int repeatMode = REPEAT_MODE_NOT_REPEAT;
-    private MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer;
     private VideoController mVideoController;
     private int seekTime;
     private String mDataSource;
     private SurfaceHolder mSurfaceHolder;
+
+    private ProgressTask progressTask;
 
     private int mVideoWidth;
     private int mVideoHeight;
@@ -43,6 +45,7 @@ public class VideoPlayer extends SurfaceView {
         Log.d(TAG, "CONSTRUCTOR");
         mediaPlayer = new MediaPlayer();
         getHolder().addCallback(mSHCallback);
+        setMediaPlayerListener();
         setFocusable(true);
         requestFocus();
     }
@@ -64,7 +67,6 @@ public class VideoPlayer extends SurfaceView {
         public void surfaceDestroyed(SurfaceHolder holder) {
             Log.d(TAG, "surfaceDestroyed()");
             mSurfaceHolder = null;
-            mediaPlayer.pause();
             currentState = STATE_IDLE;
         }
     };
@@ -113,20 +115,21 @@ public class VideoPlayer extends SurfaceView {
 
     public void prepare() {
         try {
-
             mVideoWidth = mediaPlayer.getVideoWidth();
             mVideoHeight = mediaPlayer.getVideoHeight();
             getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-            Log.d(TAG, "prepare() | VideoWidth = " + mediaPlayer.getVideoWidth() + "; VideoHeight = " + mediaPlayer.getVideoHeight());
+            Log.d(TAG, "prepare()");
             mediaPlayer.prepare();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         } catch (IllegalStateException e) {
             Log.e(TAG, e.getMessage(), e);
         }
+        mVideoController.setSeekBarMax(mediaPlayer.getDuration());
     }
 
     public void release() {
+        pause();
         mSurfaceHolder = null;
         mVideoController = null;
         mediaPlayer.release();
@@ -142,6 +145,14 @@ public class VideoPlayer extends SurfaceView {
             fitToScreen();
             mediaPlayer.start();
             currentState = STATE_PLAY;
+            mVideoController.updatePausePlay(currentState);
+
+            if(progressTask == null || progressTask.isCancelled()) {
+                progressTask = new ProgressTask();
+                progressTask.link(this);
+                progressTask.execute();
+            }
+
         }
     }
 
@@ -150,6 +161,13 @@ public class VideoPlayer extends SurfaceView {
             mediaPlayer.pause();
         }
         currentState = STATE_STOP;
+        mVideoController.updatePausePlay(currentState);
+
+        if(progressTask != null) {
+            progressTask.cancel(true);
+            progressTask = null;
+        }
+
     }
 
     public void backward() {
@@ -179,6 +197,8 @@ public class VideoPlayer extends SurfaceView {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.pause();
+                currentState = STATE_STOP;
+                mVideoController.trackComplete();
                 Toast.makeText(getContext(), "Playing video is complete", Toast.LENGTH_LONG).show();
                 switch (repeatMode) {
                     case REPEAT_MODE_NOT_REPEAT:
@@ -219,6 +239,10 @@ public class VideoPlayer extends SurfaceView {
         return mediaPlayer.getCurrentPosition();
     }
 
+    public int getDuration() {
+        return mediaPlayer.getDuration();
+    }
+
     public int getCurrentState() {
         return currentState;
     }
@@ -227,14 +251,7 @@ public class VideoPlayer extends SurfaceView {
         Log.d(TAG, "handleState()");
         switch (state) {
             case STATE_IDLE:
-                /*
-                mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(mDataSource);
-                } catch (IOException e) {
-                    Log.e(TAG,e.getMessage(),e);
-                }
-                */
+                pause();
                 break;
             case STATE_PLAY:
                 play();
@@ -244,5 +261,9 @@ public class VideoPlayer extends SurfaceView {
                 break;
         }
         mVideoController.updatePausePlay(state);
+    }
+
+    public void updateTimeText(int currentMillis, int duration) {
+        mVideoController.updateProgress(VideoController.timeToString(currentMillis), VideoController.timeToString(duration), currentMillis);
     }
 }

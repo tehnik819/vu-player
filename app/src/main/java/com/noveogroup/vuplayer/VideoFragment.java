@@ -45,24 +45,36 @@ public class VideoFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null) {
             videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
             videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
+            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION), videoPlayer.getDuration());
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
         outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+        //videoPlayer.pause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d(TAG, "onDestroyView()");
+        super.onDestroyView();
+        videoPlayer.release();
+        videoPlayer = null;
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy()");
         super.onDestroy();
-        videoPlayer.release();
     }
 
     private void initProperties() {

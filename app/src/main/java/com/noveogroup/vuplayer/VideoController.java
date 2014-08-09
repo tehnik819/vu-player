@@ -1,6 +1,7 @@
 package com.noveogroup.vuplayer;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class VideoController extends RelativeLayout {
 
@@ -18,6 +21,10 @@ public class VideoController extends RelativeLayout {
     private ImageButton mPlayButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
+    private TextView mCurrentTime;
+    private TextView mDurationTime;
+
+    private SeekBar mSeekBar;
 
     private Animation pullOut;
     private Animation pullAway;
@@ -55,6 +62,9 @@ public class VideoController extends RelativeLayout {
         mPlayButton = (ImageButton) view.findViewById(R.id.control_play_btn);
         mNextButton = (ImageButton) view.findViewById(R.id.control_next_btn);
         mPrevButton = (ImageButton) view.findViewById(R.id.control_prev_btn);
+        mSeekBar = (SeekBar) view.findViewById(R.id.seekBar);
+        mCurrentTime = (TextView) view.findViewById(R.id.text_current_time);
+        mDurationTime = (TextView) view.findViewById(R.id.text_duration);
     }
 
     private void initAnimations() {
@@ -118,6 +128,25 @@ public class VideoController extends RelativeLayout {
                 updatePausePlay(mVideoPlayer.getCurrentState());
             }
         });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    mVideoPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     public void setVideoPlayer(VideoPlayer vp) {
@@ -150,5 +179,26 @@ public class VideoController extends RelativeLayout {
                 mPlayButton.setImageResource(R.drawable.ic_play);
                 break;
         }
+    }
+
+    public void setSeekBarMax(int max) {
+        mSeekBar.setMax(max);
+    }
+
+    public void trackComplete() {
+        updatePausePlay(VideoPlayer.STATE_STOP);
+    }
+
+    public static String timeToString(int millis) {
+        int hours = (int)(millis/DateUtils.HOUR_IN_MILLIS);
+        int minutes = (int)((millis - hours*DateUtils.HOUR_IN_MILLIS)/DateUtils.MINUTE_IN_MILLIS);
+        int seconds = (int)((millis - hours*DateUtils.HOUR_IN_MILLIS - minutes*DateUtils.MINUTE_IN_MILLIS)/DateUtils.SECOND_IN_MILLIS);
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public void updateProgress(String currentText, String durationText, int seekProgress) {
+        mCurrentTime.setText(currentText);
+        mDurationTime.setText(durationText);
+        mSeekBar.setProgress(seekProgress);
     }
 }
