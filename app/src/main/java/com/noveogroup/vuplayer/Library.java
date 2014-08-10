@@ -20,12 +20,12 @@ public class Library extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d("Library", "Button start clicked");
+
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.container, new VideoFragment())
                         .addToBackStack(null)
                         .commit();
-                //getActivity().getSupportFragmentManager().executePendingTransactions();
             }
         });
         return v;

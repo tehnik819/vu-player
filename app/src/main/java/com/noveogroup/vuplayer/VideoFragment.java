@@ -3,6 +3,7 @@ package com.noveogroup.vuplayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class VideoFragment extends Fragment {
+public class VideoFragment extends Fragment{
     private int seekTime;
     private Properties properties;
     private String viewSource;
 
     private VideoPlayer videoPlayer;
     private VideoController videoController;
+    private TopBar topBar;
 
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
@@ -27,20 +29,34 @@ public class VideoFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
         Log.d(TAG, "onCreateView()");
         initProperties();
-        View v = inflater.inflate(R.layout.fragment_video, container, false);
+        View view = inflater.inflate(R.layout.fragment_video, container, false);
 
-        videoPlayer = (VideoPlayer) v.findViewById(R.id.video_player);
-        videoController = (VideoController) v.findViewById(R.id.video_controller);
+        videoPlayer = (VideoPlayer) view.findViewById(R.id.video_player);
+        videoController = (VideoController) view.findViewById(R.id.video_controller);
+        topBar = (TopBar) view.findViewById(R.id.top_bar);
+        topBar.setOnBarClickListener(new TopBar.OnBarClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick() : " + v.getId());
+                switch (v.getId()) {
+                    case R.id.top_bar_close:
+                        getActivity().getSupportFragmentManager().popBackStack();
+                        break;
+                }
+            }
+        });
 
         videoPlayer.setVideoController(videoController);
+        videoPlayer.setTopBar(topBar);
         videoPlayer.setDataSource(viewSource);
         videoPlayer.setSeekTime(seekTime);
         videoPlayer.prepare();
         videoPlayer.play();
 
-        return v;
+        return view;
     }
 
     @Override
@@ -60,11 +76,11 @@ public class VideoFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
         outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
-        //videoPlayer.pause();
     }
 
     @Override
     public void onDestroyView() {
+        ((ActionBarActivity)getActivity()).getSupportActionBar().show();
         Log.d(TAG, "onDestroyView()");
         super.onDestroyView();
         videoPlayer.release();
