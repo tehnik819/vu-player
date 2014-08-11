@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.R;
@@ -27,6 +28,7 @@ import com.noveogroup.vuplayer.adjusters.BrightnessAdjuster;
 import com.noveogroup.vuplayer.enumerations.ScreenAction;
 import com.noveogroup.vuplayer.listeners.OnScreenGestureListener;
 import com.noveogroup.vuplayer.listeners.OnScreenTouchListener;
+import com.noveogroup.vuplayer.translation.google.GoogleTranslator;
 import com.noveogroup.vuplayer.utils.TimeConverter;
 
 import java.io.IOException;
@@ -111,6 +113,16 @@ public class VideoFragment extends Fragment
         subtitlesView.setOnSubtitlesTouchListener(this);
         subtitlesManager = new SubtitlesManager(videoPlayer, subtitlesView);
         subtitlesManager.loadSubtitles(viewSource);
+
+        Button translateButton = (Button) view.findViewById(R.id.translate_button);
+        translateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String request = getActivity().getResources().getString(R.string.translate_google_http_request, "hello", "en", "ru");
+                TranslationDialogFragment fragment = TranslationDialogFragment.newInstance("Hello", new GoogleTranslator(request));
+                fragment.show(getFragmentManager(), "Dialog");
+            }
+        });
 
         return view;
     }
