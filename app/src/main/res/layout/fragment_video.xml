@@ -45,4 +45,12 @@
         android:textColor="@android:color/white"
         />
 
+    <view
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        class="com.noveogroup.vuplayer.TopBar"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

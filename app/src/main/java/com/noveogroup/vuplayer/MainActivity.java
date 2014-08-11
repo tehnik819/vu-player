@@ -20,10 +20,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new Library())
-                .commit();
-
+        if(savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new Library())
+                    .commit();
+        }
+        
 //        Set hardware volume buttons to work in the Activity.
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }

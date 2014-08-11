@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_library">#ffffb12b</color>
+    <color name="background_library">#ffff7415</color>
+    <color name="battery_color">#ffff7413</color>
     <color name="control_background">#32000000</color>
 
     <color name="subtitles_selected_text">#000</color>

@@ -2,6 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="battery_horizontal_margin">5dp</dimen>
+    <dimen name="battery_width">20dp</dimen>
     <dimen name="control_buttons_text_size">20sp</dimen>
     <dimen name="screen_action_text_size">40sp</dimen>
     <dimen name="screen_action_top_margin">40dp</dimen>
@@ -9,4 +11,5 @@
     <dimen name="h_scroll_bar_step">5dp</dimen>
     <dimen name="subtitles_bottom_margin">20dp</dimen>
     <dimen name="subtitles_text_size">20sp</dimen>
+    <dimen name="title_text_size">20sp</dimen>
 </resources>
