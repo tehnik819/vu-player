@@ -4,11 +4,16 @@
 
 package com.noveogroup.vuplayer.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.TopBar;
 import com.noveogroup.vuplayer.subtitles.SubtitlesManager;
 import com.noveogroup.vuplayer.subtitles.SubtitlesView;
 import com.noveogroup.vuplayer.VideoController;
@@ -56,10 +62,13 @@ public class VideoFragment extends Fragment
     private TextView screenActionTextView;
     private SubtitlesView subtitlesView;
     private VideoController videoController;
-
+    private TopBar topBar;
+    private BroadcastReceiver batteryReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
         Log.d(TAG, "onCreateView()");
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
@@ -99,7 +108,40 @@ public class VideoFragment extends Fragment
 //        Initialize videoPlayer.
         videoPlayer = (VideoPlayer) view.findViewById(R.id.video_player);
         videoController = (VideoController) view.findViewById(R.id.video_controller);
+        topBar = (TopBar) view.findViewById(R.id.top_bar);
+        topBar.setOnBarClickListener(new TopBar.OnBarClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick() : " + v.getId());
+                switch (v.getId()) {
+                    case R.id.top_bar_close:
+                        videoPlayer.pause();
+                        getActivity().getSupportFragmentManager().popBackStack();
+                        break;
+                }
+            }
+        });
+
+        batteryReceiver = new BroadcastReceiver() {
+            int scale = -1;
+            int level = -1;
+            int voltage = -1;
+            int temp = -1;
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                temp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+                voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
+                topBar.updateBattery(level, scale);
+                Log.e("BatteryManager", "level is " + level + "/" + scale + ", temp is " + temp + ", voltage is " + voltage);
+            }
+        };
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        getActivity().registerReceiver(batteryReceiver, filter);
+
         videoPlayer.setVideoController(videoController);
+        videoPlayer.setTopBar(topBar);
         videoPlayer.setDataSource(viewSource);
         videoPlayer.setSeekTime(seekTime);
         videoPlayer.setOnChangeStateListener(this);
@@ -121,6 +163,7 @@ public class VideoFragment extends Fragment
         if(savedInstanceState != null) {
             videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
             videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
+            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION), videoPlayer.getDuration());
         }
     }
 
@@ -147,9 +190,10 @@ public class VideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-//        videoPlayer.release();
+        videoPlayer.release();
         videoPlayer = null;
+        ((ActionBarActivity)getActivity()).getSupportActionBar().show();
+        getActivity().unregisterReceiver(batteryReceiver);
         screenActionTextView = null;
         subtitlesManager.releaseViews();
     }
@@ -158,7 +202,7 @@ public class VideoFragment extends Fragment
     public void onPause() {
         super.onPause();
         Log.d(TAG, "OnPause");
-
+        videoPlayer.pause();
         brightnessAdjuster.restoreSavedSettings();
         subtitlesManager.stopSubtitling();
     }

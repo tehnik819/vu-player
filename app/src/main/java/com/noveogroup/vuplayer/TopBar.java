@@ -45,24 +45,8 @@ public class TopBar extends RelativeLayout {
         this.addView(mRoot);
         initBarView();
         initAnimations();
-        BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
-            int scale = -1;
-            int level = -1;
-            int voltage = -1;
-            int temp = -1;
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                temp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
-                voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
-                updateBattery(level, scale);
-                Log.e("BatteryManager", "level is " + level + "/" + scale + ", temp is " + temp + ", voltage is " + voltage);
-            }
-        };
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        mContext.registerReceiver(batteryReceiver, filter);
     }
+
 
     private void initBarView() {
         mImageClose = (ImageButton) mRoot.findViewById(R.id.top_bar_close);
@@ -137,7 +121,7 @@ public class TopBar extends RelativeLayout {
         mTitle.setText(title);
     }
 
-    private void updateBattery(int level, int scale) {
+    public void updateBattery(int level, int scale) {
         mBatteryText.setText(level + "%");
         mBatteryBar.setMax(scale);
         mBatteryBar.setProgress(level);
