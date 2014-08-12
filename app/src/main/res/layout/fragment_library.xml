@@ -11,4 +11,10 @@
         android:text="Play Video"
         android:id="@+id/play_video" />
 
+    <Button
+        android:id="@+id/note_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Notes: Add Empty Note" />
+
 </LinearLayout>

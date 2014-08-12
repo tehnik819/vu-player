@@ -12,4 +12,16 @@
 
     <string name="filename">/test.mp4</string>
 
+    <string name="notes_word_combination">Word Combination:</string>
+    <string name="notes_source">Source:</string>
+    <string name="notes_comment">Comment:</string>
+    <string name="notes_hint_word_combination">Phrase</string>
+    <string name="notes_hint_source">Video file name</string>
+    <string name="notes_hint_comment">Comment to note</string>
+    <string name="notes_save">Save note</string>
+    <string name="notes_edit">Edit note</string>
+    <string name="notes_delete">Delete note</string>
+    <string name="empty_field_message">Empty Word Combination!</string>
+    <string name="notes_added_notes">Already added notes:</string>
+
 </resources>

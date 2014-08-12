@@ -8,4 +8,6 @@
     <color name="subtitles_selected_background">#ff0</color>
     <color name="subtitles_unselected_text">#fff</color>
     <color name="subtitles_unselected_background">#00000000</color>
+    <color name="notes_background">#ffb7b7b7</color>
+    <color name="list_item_text_color">#ffff7b0b</color>
 </resources>

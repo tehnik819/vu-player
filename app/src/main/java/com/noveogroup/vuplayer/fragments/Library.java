@@ -16,12 +16,14 @@ import com.noveogroup.vuplayer.R;
 
 public class Library extends Fragment {
     private Button playVideoBtn;
+    private Button noteButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("Library", "onCreateView()");
         View v = inflater.inflate(R.layout.fragment_library, container, false);
         playVideoBtn = (Button) v.findViewById(R.id.play_video);
+        noteButton = (Button) v.findViewById(R.id.note_button);
 		playVideoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -30,6 +32,16 @@ public class Library extends Fragment {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.container, new VideoFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        noteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotesFragment notes = NotesFragment.newInstance(null, null, null, NotesFragment.MODE_ADD, 0);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, notes)
                         .addToBackStack(null)
                         .commit();
             }
