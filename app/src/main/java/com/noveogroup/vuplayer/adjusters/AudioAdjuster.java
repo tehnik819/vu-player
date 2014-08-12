@@ -17,7 +17,7 @@ public class AudioAdjuster {
         maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
     }
 
-    public static AudioAdjuster getInstance(AudioManager audioManager) {
+    public synchronized static AudioAdjuster getInstance(AudioManager audioManager) {
         return audioAdjuster = audioAdjuster == null ?
                 new AudioAdjuster(audioManager) : audioAdjuster;
     }

@@ -12,6 +12,16 @@
 
     <string name="filename">/test.mp4</string>
 
+    <string name="translate_google_http_request">
+        http://translate.google.com/translate_a/t?client=x&amp;text=%1$s&amp;sl=%2$s&amp;tl=%3$s
+    </string>
+
+    <string name="text_to_translate_view_hint">Enter text</string>
+    <string name="translation_dialog_progress_message">Retrieving translation...</string>
+    <string name="translation_dialog_more_button_text">More...</string>
+    <string name="translation_dialog_add_button_text">Add to notes...</string>
+    <string name="translation_dialog_cancel_button_text">Cancel</string>
+
     <string name="notes_word_combination">Word Combination:</string>
     <string name="notes_source">Source:</string>
     <string name="notes_comment">Comment:</string>
