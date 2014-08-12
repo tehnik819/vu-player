@@ -34,7 +34,8 @@ public final class PrimaryTranslationFragment extends AbstractTranslationFragmen
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        retrieveArguments(savedInstanceState);
+        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
+        translator = bundle != null ? (Translator) bundle.getParcelable(TRANSLATOR) : null;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = LayoutInflater.from(getActivity())
@@ -77,7 +78,7 @@ public final class PrimaryTranslationFragment extends AbstractTranslationFragmen
 
         if (translator != null) {
             sourceTextView.setText(translator.getText());
-            if(!isFinished) {
+            if(!translator.isFinished()) {
                 retrieveTranslation();
             } else {
                 showTranslation();

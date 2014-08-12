@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.translation.Translator;
 
 public final class DetailedTranslationFragment extends AbstractTranslationFragment {
 
@@ -20,11 +21,18 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
     private EditText translationLanguageView;
     private TextView translationView;
 
+    public static DetailedTranslationFragment newInstance(Translator translator) {
+        DetailedTranslationFragment fragment = new DetailedTranslationFragment();
+        return (DetailedTranslationFragment) initialize(fragment, translator);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        retrieveArguments(savedInstanceState);
+
+        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
+        translator = bundle != null ? (Translator) bundle.getParcelable(TRANSLATOR) : null;
 
         View view = inflater.inflate(R.layout.fragment_translation, container, false);
         textToTranslateView = (EditText) view.findViewById(R.id.text_to_translate_view);
@@ -37,10 +45,10 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
             sourceLanguageView.setText(translator.getSourceLanguage());
             translationLanguageView.setText(translator.getTranslationLanguage());
 
-            if (!isFinished) {
+            if (!translator.isFinished()) {
                 retrieveTranslation();
             } else {
-                translationView.setText(translator.getDetailedTranslation());
+                translationView.setText(translator.getDetailedTranslation(getActivity()));
             }
         }
 
@@ -60,6 +68,6 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
     @Override
     protected void showTranslation() {
         translationTask = null;
-        translationView.setText(translator.getDetailedTranslation());
+        translationView.setText(translator.getDetailedTranslation(getActivity()));
     }
 }

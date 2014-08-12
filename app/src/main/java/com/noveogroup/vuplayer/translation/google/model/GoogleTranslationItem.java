@@ -17,6 +17,10 @@ public class GoogleTranslationItem {
         return sentences;
     }
 
+    public List<GooglePartOfSpeech> getDict() {
+        return dict;
+    }
+
     public String getSrc() {
         return src;
     }

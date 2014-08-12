@@ -13,10 +13,8 @@ import com.noveogroup.vuplayer.translation.Translator;
 public abstract class AbstractTranslationFragment extends DialogFragment {
 
     protected static final String TRANSLATOR = "VuPlayer.TranslationFragment.TRANSLATOR";
-    protected static final String IS_FINISHED = "VuPlayer.TranslationFragment.IS_FINISHED";
 
     protected Translator translator;
-    protected boolean isFinished = false;
 
     protected AsyncTask<Void, Void, Void> translationTask;
 
@@ -29,36 +27,27 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
         return fragment;
     }
 
-    protected void retrieveArguments(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            translator = savedInstanceState.getParcelable(TRANSLATOR);
-            isFinished = savedInstanceState.getBoolean(IS_FINISHED);
-        } else {
-            Bundle bundle = getArguments();
-            translator = bundle != null ? (Translator) bundle.getParcelable(TRANSLATOR) : null;
-        }
-    }
-
     protected void retrieveTranslation() {
-        isFinished = false;
-        if (translator != null) {
-            translationTask = new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    translator.retrieveTranslation();
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    if (!isCancelled()) {
-                        super.onPostExecute(result);
-                        showTranslation();
-                    }
-                    isFinished = true;
-                }
-            }.execute();
+        if (translator == null) {
+            return;
         }
+        translator.setFinished(false);
+        translationTask = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                translator.retrieveTranslation(getActivity());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if (!isCancelled()) {
+                    super.onPostExecute(result);
+                    showTranslation();
+                }
+                translator.setFinished(true);
+            }
+        }.execute();
     }
 
     protected abstract void showTranslation();
@@ -76,6 +65,5 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(TRANSLATOR, translator);
-        outState.putBoolean(IS_FINISHED, isFinished);
     }
 }

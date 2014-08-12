@@ -12,4 +12,12 @@ public class GooglePartOfSpeech {
     private List<GoogleEntry> entry;
     private String baseForm;
     private int posEnum;
+
+    public String getPos() {
+        return pos;
+    }
+
+    public List<String> getTerms() {
+        return terms;
+    }
 }

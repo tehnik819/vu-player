@@ -26,7 +26,7 @@ public class BrightnessAdjuster {
         this.contentResolver = contentResolver;
     }
 
-    public static BrightnessAdjuster getInstance(ContentResolver contentResolver) {
+    public synchronized static BrightnessAdjuster getInstance(ContentResolver contentResolver) {
             return brightnessAdjuster = brightnessAdjuster == null ?
                                       new BrightnessAdjuster(contentResolver) : brightnessAdjuster;
     }

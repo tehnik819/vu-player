@@ -13,16 +13,21 @@ import com.noveogroup.vuplayer.utils.PathnameHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class FileManagementTests extends AndroidTestCase {
 
     private static final String TAG = "FileManagementTests";
 
     protected String absVideoPathname;
+    protected String absDirName;
+    protected String[] videoExtensions;
 
     protected void setUp() {
         absVideoPathname = Environment.getExternalStorageDirectory().toString()
                 + getContext().getResources().getString(R.string.filename);
+        absDirName = Environment.getExternalStorageDirectory().toString();
+        videoExtensions = new String[] {"mp4"};
     }
 
     public void testSubtitlesReading() {
@@ -47,5 +52,14 @@ public class FileManagementTests extends AndroidTestCase {
             Log.d(TAG, subtitlesPathnames.get(i));
         }
         assertTrue(subtitlesPathnames.size() != 0);
+    }
+
+    public void testFilesInDirSearch() {
+        List<String> files = FileManager.getFiles(absDirName, videoExtensions, true, false);
+
+        for (String file : files) {
+            Log.d(TAG, file);
+        }
+        assertTrue(files.size() != 0);
     }
 }

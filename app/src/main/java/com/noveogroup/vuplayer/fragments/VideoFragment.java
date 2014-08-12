@@ -118,10 +118,8 @@ public class VideoFragment extends Fragment
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String request = getActivity().getResources()
-                        .getString(R.string.translate_google_http_request);
-                PrimaryTranslationFragment fragment = PrimaryTranslationFragment
-                                .newInstance(new GoogleTranslator("hello", "en", "ru", request));
+                DetailedTranslationFragment fragment = DetailedTranslationFragment
+                                .newInstance(new GoogleTranslator("hello", "en", "ru"));
                 fragment.show(getFragmentManager(), "Dialog");
             }
         });
