@@ -8,4 +8,6 @@
     <color name="subtitles_selected_background">#ff0</color>
     <color name="subtitles_unselected_text">#fff</color>
     <color name="subtitles_unselected_background">#00000000</color>
+
+    <color name="translation_part_of_speech_text">#0f0</color>
 </resources>
