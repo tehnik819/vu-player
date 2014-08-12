@@ -32,6 +32,7 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
             return;
         }
         translator.setFinished(false);
+
         translationTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -47,7 +48,7 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
                 }
                 translator.setFinished(true);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     protected abstract void showTranslation();

@@ -23,8 +23,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.R;
 import com.noveogroup.vuplayer.TopBar;
+import com.noveogroup.vuplayer.events.TranslationButtonClickedEvent;
 import com.noveogroup.vuplayer.subtitles.SubtitlesManager;
 import com.noveogroup.vuplayer.subtitles.SubtitlesView;
 import com.noveogroup.vuplayer.VideoController;
@@ -36,6 +38,7 @@ import com.noveogroup.vuplayer.listeners.OnScreenGestureListener;
 import com.noveogroup.vuplayer.listeners.OnScreenTouchListener;
 import com.noveogroup.vuplayer.translation.google.GoogleTranslator;
 import com.noveogroup.vuplayer.utils.TimeConverter;
+import com.squareup.otto.Bus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +84,7 @@ public class VideoFragment extends Fragment
         brightnessAdjuster.setManualMode();
 //        Set up AudioAdjuster.
         audioAdjuster = AudioAdjuster.getInstance((AudioManager) getActivity()
-                                                  .getSystemService(Context.AUDIO_SERVICE));
+                .getSystemService(Context.AUDIO_SERVICE));
 //        Get volume and brightness scroll bars length in pixels.
         hScrollBarStepPixels = getResources().getDimensionPixelSize(R.dimen.h_scroll_bar_step);
 //        Get seek scroll bar step in pixels.
@@ -159,10 +162,9 @@ public class VideoFragment extends Fragment
         Button translateButton = (Button) view.findViewById(R.id.translate_button);
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                DetailedTranslationFragment fragment = DetailedTranslationFragment
-                                .newInstance(new GoogleTranslator("hello", "en", "ru"));
-                fragment.show(getFragmentManager(), "Dialog");
+            public void onClick(View view) {
+                BaseApplication.getEventBus()
+                        .post(new TranslationButtonClickedEvent(subtitlesView.getSelectedText()));
             }
         });
 

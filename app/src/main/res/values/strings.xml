@@ -22,4 +22,7 @@
     <string name="translation_dialog_add_button_text">Add to notes...</string>
     <string name="translation_dialog_cancel_button_text">Cancel</string>
 
+    <string name="source_language_default">auto</string>
+    <string name="translation_language_default">en</string>
+
 </resources>

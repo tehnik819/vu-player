@@ -149,19 +149,23 @@ public class SubtitlesView extends TextView {
     }
 
     public String getSelectedText() {
+
+        if(selections == null) {
+            return "";
+        }
+
         char[] text = getText().toString().toCharArray();
         char[] selectedText = new char[text.length];
         int n = 0;
 
         for (Selection selection : selections) {
-            for (int i = text[selection.startIndex]; i < text[selection.endIndex]; ++i) {
+            for (int i = selection.startIndex; i < selection.endIndex; ++i) {
                 selectedText[n] = text[i];
                 ++n;
             }
             selectedText[n] = ' ';
             ++n;
         }
-
         return new String(selectedText, 0, n - 1);
     }
 
