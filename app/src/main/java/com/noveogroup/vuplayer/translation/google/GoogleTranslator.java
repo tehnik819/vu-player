@@ -4,37 +4,38 @@
 
 package com.noveogroup.vuplayer.translation.google;
 
-import android.content.Context;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.translation.AbstractTranslator;
 import com.noveogroup.vuplayer.translation.Translator;
 import com.noveogroup.vuplayer.translation.google.model.GoogleTranslationItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Scanner;
-
-public final class GoogleTranslator implements Translator {
+public final class GoogleTranslator extends AbstractTranslator {
 
     private static final String TAG = "VuPlayer.GoogleTranslator";
 
-    private String request;
+    private String requestString;
     private GoogleTranslationItem translationItem;
     private String primaryTranslation;
     private String detailedTranslation;
 
-    public GoogleTranslator(String request) {
-        this.request = request;
+    public GoogleTranslator(String text, String sourceLanguage, String translationLanguage, String requestString) {
+        this.text = text;
+        this.sourceLanguage = sourceLanguage;
+        this.translationLanguage = translationLanguage;
+        this.requestString = requestString;
     }
 
     private GoogleTranslator(Parcel parcel) {
-        request = parcel.readString();
+        text = parcel.readString();
+        sourceLanguage = parcel.readString();
+        translationLanguage = parcel.readString();
+        requestString = parcel.readString();
     }
 
     @Override
@@ -57,12 +58,13 @@ public final class GoogleTranslator implements Translator {
     @Override
     public void retrieveTranslation() {
         try {
-            URL url = new URL(request);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-            String jsonString = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();
-            urlConnection.disconnect();
+            final OkHttpClient client = new OkHttpClient();
+            final String requestFilled = String.format(requestString, text,
+                                                       sourceLanguage, translationLanguage);
+            final Request request = new Request.Builder().url(requestFilled).build();
+            Response response = client.newCall(request).execute();
 
+            String jsonString = response.body().string();
             if (jsonString != null) {
                 Gson gson = new Gson();
                 translationItem = gson.fromJson(jsonString, GoogleTranslationItem.class);
@@ -79,7 +81,10 @@ public final class GoogleTranslator implements Translator {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(request);
+        parcel.writeString(text);
+        parcel.writeString(sourceLanguage);
+        parcel.writeString(translationLanguage);
+        parcel.writeString(requestString);
     }
 
     public static final Creator CREATOR = new Creator() {

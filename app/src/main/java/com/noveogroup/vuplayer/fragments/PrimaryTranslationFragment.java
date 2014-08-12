@@ -6,54 +6,35 @@ package com.noveogroup.vuplayer.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.R;
 import com.noveogroup.vuplayer.translation.Translator;
 
-public class TranslationDialogFragment extends DialogFragment {
-
-    private static final String TRANSLATOR = "VuPlayer.TranslationDialogFragment.TRANSLATOR";
-    private static final String TEXT = "VuPlayer.TranslationDialogFragment.TEXT";
-
-    private Translator translator;
-    private String text;
+public final class PrimaryTranslationFragment extends AbstractTranslationFragment {
 
     TextView sourceTextView;
     TextView resultTextView;
     ProgressBar progressBar;
 
-    public static TranslationDialogFragment newInstance(String text, Translator translator){
-        TranslationDialogFragment fragment = new TranslationDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(TEXT, text);
-        bundle.putParcelable(TRANSLATOR, translator);
-        fragment.setArguments(bundle);
 
-        return fragment;
+    public static PrimaryTranslationFragment newInstance(Translator translator) {
+        PrimaryTranslationFragment fragment = new PrimaryTranslationFragment();
+        return (PrimaryTranslationFragment) initialize(fragment, translator);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (bundle != null) {
-            text = bundle.getString(TEXT);
-            translator = bundle.getParcelable(TRANSLATOR);
-        }
+        retrieveArguments(savedInstanceState);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = LayoutInflater.from(getActivity())
@@ -61,7 +42,6 @@ public class TranslationDialogFragment extends DialogFragment {
         builder.setView(view);
 
         sourceTextView = (TextView) view.findViewById(R.id.translation_dialog_source_text);
-        sourceTextView.setText(text);
         resultTextView = (TextView) view.findViewById(R.id.translation_dialog_result_text);
         progressBar = (ProgressBar) view.findViewById(R.id.translation_dialog_progress_bar);
 
@@ -92,29 +72,35 @@ public class TranslationDialogFragment extends DialogFragment {
             }
         });
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                translator.retrieveTranslation();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                showTranslation();
-            }
-        }.execute();
-
         AlertDialog dialog = builder.create();
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        if (translator != null) {
+            sourceTextView.setText(translator.getText());
+            if(!isFinished) {
+                retrieveTranslation();
+            } else {
+                showTranslation();
+            }
+        }
 
         return dialog;
     }
 
-    private void showTranslation() {
+    @Override
+    protected void showTranslation() {
+        translationTask = null;
         resultTextView.setText(translator.getPrimaryTranslation());
         progressBar.setVisibility(View.INVISIBLE);
         resultTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        sourceTextView = null;
+        resultTextView = null;
+        progressBar = null;
     }
 }
