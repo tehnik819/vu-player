@@ -79,27 +79,6 @@ public class VideoPlayer extends SurfaceView {
         }
     };
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "ACTION_DOWN");
-                if(mVideoController.isShowing()) {
-                    Log.d(TAG, "Hide control");
-                    mVideoController.hide();
-                    mTopBar.hide();
-                }
-                else {
-                    Log.d(TAG, "Show control");
-                    mVideoController.show();
-                    mTopBar.show();
-                }
-                break;
-        }
-
-        return super.onTouchEvent(event);
-    }
-
     public void setDataSource(String source) {
         mDataSource = source;
         try {
@@ -281,10 +260,12 @@ public class VideoPlayer extends SurfaceView {
         if(mVideoController.isShowing()) {
             Log.d(TAG, "Hide control");
             mVideoController.hide();
+            mTopBar.hide();
         }
         else {
             Log.d(TAG, "Show control");
             mVideoController.show();
+            mTopBar.show();
         }
     }
 

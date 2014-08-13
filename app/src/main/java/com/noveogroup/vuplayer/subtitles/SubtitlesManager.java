@@ -93,6 +93,9 @@ public class SubtitlesManager {
         }
 
         subtitlingRunnable = new Runnable() {
+            private int previousStart = 0;
+            private int previousEnd = 0;
+
             @Override
             public void run() {
                 int currentPosition = videoPlayer.getCurrentPosition();
@@ -102,9 +105,14 @@ public class SubtitlesManager {
                     for(Caption caption : subtitles) {
                         if(currentPosition >= caption.start.getMilliseconds()
                                 && currentPosition <= caption.end.getMilliseconds()) {
-                            subtitlesView.setText(Html.fromHtml(caption.content));
-//                            subtitlesView.setClickable(true);
-//                            subtitlesView.setVisibility(View.VISIBLE);
+                            if(previousStart != caption.start.getMilliseconds()
+                                    && previousEnd != caption.end.getMilliseconds()) {
+                                previousStart = caption.start.getMilliseconds();
+                                previousEnd = caption.end.getMilliseconds();
+                                subtitlesView.setText(Html.fromHtml(caption.content));
+//                                subtitlesView.setClickable(true);
+//                                subtitlesView.setVisibility(View.VISIBLE);
+                            }
                             return;
                         }
                     }

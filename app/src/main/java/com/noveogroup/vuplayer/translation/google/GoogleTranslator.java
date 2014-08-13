@@ -70,6 +70,11 @@ public final class GoogleTranslator extends AbstractTranslator {
 
         String translationString = "";
         List<GooglePartOfSpeech> dict = translationItem.getDict();
+
+        if (dict == null) {
+            return new SpannableString(getPrimaryTranslation());
+        }
+
         List<int[]> highlightIntervals = new ArrayList<int[]>();
         for (GooglePartOfSpeech partOfSpeech : dict) {
             String pos = partOfSpeech.getPos();

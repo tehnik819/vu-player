@@ -26,6 +26,8 @@ dependencies {
     compile project(':vksdk_library')
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
-    //    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
-    //    compile 'com.github.riccardove.easyjasub:subtitleConvert:1.0.2'
+    compile 'com.squareup:otto:1.3.5'
+//    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
+//    compile 'com.github.riccardove.easyjasub:subtitleConvert:1.0.2'
+
 }

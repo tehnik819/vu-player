@@ -15,7 +15,10 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.events.AddButtonClickEvent;
+import com.noveogroup.vuplayer.events.MoreButtonClickEvent;
 import com.noveogroup.vuplayer.translation.Translator;
 
 public final class PrimaryTranslationFragment extends AbstractTranslationFragment {
@@ -51,7 +54,7 @@ public final class PrimaryTranslationFragment extends AbstractTranslationFragmen
                 new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                BaseApplication.getEventBus().post(new MoreButtonClickEvent(translator));
             }
         });
 
