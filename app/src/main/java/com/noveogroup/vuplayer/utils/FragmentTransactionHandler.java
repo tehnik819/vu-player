@@ -12,8 +12,8 @@ import android.support.v4.app.FragmentTransaction;
 public class FragmentTransactionHandler {
 
     private FragmentTransactionHandler() {
-        throw new UnsupportedOperationException
-                ("FragmentTransactionHandler instance can not be created.");
+        throw new UnsupportedOperationException("FragmentTransactionHandler" +
+                " instance can not be created.");
     }
 
     public static void putFragment(FragmentManager fragmentManager, int containerId,

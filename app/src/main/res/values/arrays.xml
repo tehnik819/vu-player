@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ Copyright (c) 2014 Sergey Bragin and Alexandr Valov
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+    <string-array name="supported_video_formats">
+        <item>3gp</item>
+        <item>mp4</item>
+        <item>webm</item>
+    </string-array>
+</resources>

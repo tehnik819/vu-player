@@ -29,7 +29,7 @@ public class FileManager {
         return files;
     }
 
-    public static List<String> getFiles(List<String> files, String absDirName, String[] extensions,
+    public static ArrayList<String> getFiles(ArrayList<String> files, String absDirName, String[] extensions,
                                         boolean doRecursively, boolean areDirs) {
 
         File directory = new File(absDirName);
@@ -70,21 +70,21 @@ public class FileManager {
         return files;
     }
 
-    public static List<String> getFiles(String absDirName, String[] extensions,
+    public static ArrayList<String> getFiles(String absDirName, String[] extensions,
                                         boolean doRecursively, boolean areDirs) {
 
-        List<String> files = new ArrayList<String>();
+        ArrayList<String> files = new ArrayList<String>();
         files = FileManager.getFiles(files, absDirName, extensions, doRecursively, areDirs);
 
         return files;
     }
 
-    public static List<String> getDirsWithFiles(String absDirName, String[] extensions,
+    public static ArrayList<String> getDirsWithFiles(String absDirName, String[] extensions,
                                                 boolean doRecursively) {
         return getFiles(absDirName, extensions, doRecursively, true);
     }
 
-    public static List<String> getNonDirFiles(String absDirName, String[] extensions,
+    public static ArrayList<String> getNonDirFiles(String absDirName, String[] extensions,
                                               boolean doRecursively) {
         return getFiles(absDirName, extensions, doRecursively, false);
     }
