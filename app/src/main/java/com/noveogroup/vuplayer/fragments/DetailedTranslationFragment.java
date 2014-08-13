@@ -6,6 +6,9 @@ package com.noveogroup.vuplayer.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -30,6 +33,8 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        setHasOptionsMenu(true);
 
         Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
         translator = bundle != null ? (Translator) bundle.getParcelable(TRANSLATOR) : null;
@@ -69,5 +74,45 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
     protected void showTranslation() {
         translationTask = null;
         translationView.setText(translator.getDetailedTranslation(getActivity()));
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.fragment_detailed_translation, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_translate:
+                retrieveTranslation();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void retrieveTranslation() {
+        if (translator == null) {
+            return;
+        }
+
+        String text = textToTranslateView.getText().toString();
+        String sourceLanguage = sourceLanguageView.getText().toString();
+        String translationLanguage = translationLanguageView.getText().toString();
+        if (!translator.getText().equals(text)
+                || !translator.getSourceLanguage().equals(sourceLanguage)
+                || !translator.getTranslationLanguage().equals(translationLanguage)) {
+
+            translator.setText(text);
+            translator.setSourceLanguage(sourceLanguage);
+            translator.setTranslationLanguage(translationLanguage);
+        }
+
+        super.retrieveTranslation();
     }
 }
