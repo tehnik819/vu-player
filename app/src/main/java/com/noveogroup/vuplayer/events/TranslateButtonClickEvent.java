@@ -4,11 +4,11 @@
 
 package com.noveogroup.vuplayer.events;
 
-public class TranslationButtonClickedEvent {
+public class TranslateButtonClickEvent {
 
     public String textToTranslate;
 
-    public TranslationButtonClickedEvent(String textToTranslate) {
+    public TranslateButtonClickEvent(String textToTranslate) {
         this.textToTranslate = textToTranslate;
     }
 }

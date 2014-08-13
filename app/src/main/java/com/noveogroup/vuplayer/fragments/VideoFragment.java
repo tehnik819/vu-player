@@ -26,7 +26,8 @@ import android.widget.TextView;
 import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.R;
 import com.noveogroup.vuplayer.TopBar;
-import com.noveogroup.vuplayer.events.TranslationButtonClickedEvent;
+import com.noveogroup.vuplayer.events.AddButtonClickEvent;
+import com.noveogroup.vuplayer.events.TranslateButtonClickEvent;
 import com.noveogroup.vuplayer.subtitles.SubtitlesManager;
 import com.noveogroup.vuplayer.subtitles.SubtitlesView;
 import com.noveogroup.vuplayer.VideoController;
@@ -36,22 +37,21 @@ import com.noveogroup.vuplayer.adjusters.BrightnessAdjuster;
 import com.noveogroup.vuplayer.enumerations.ScreenAction;
 import com.noveogroup.vuplayer.listeners.OnScreenGestureListener;
 import com.noveogroup.vuplayer.listeners.OnScreenTouchListener;
-import com.noveogroup.vuplayer.translation.google.GoogleTranslator;
 import com.noveogroup.vuplayer.utils.TimeConverter;
-import com.squareup.otto.Bus;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 
-public class VideoFragment extends Fragment
+public final class VideoFragment extends Fragment
                            implements OnScreenGestureListener.OnScreenActionListener,
                                       SubtitlesView.OnSubtitlesTouchListener,
                                       VideoPlayer.OnChangeStateListener {
 
     private static final String KEY_CURRENT_POSITION = "com.noveogroup.vuplayer.current_position";
     private static final String KEY_CURRENT_STATE = "com.noveogroup.vuplayer.current_state";
+    private static final String VIEW_SOURCE = "VuPlayer.VIEW_SOURCE";
     private final static String TAG = "VideoFragment";
 
     private int seekTime;
@@ -69,6 +69,17 @@ public class VideoFragment extends Fragment
     private VideoController videoController;
     private TopBar topBar;
     private BroadcastReceiver batteryReceiver;
+    private Button translateButton;
+    private Button addButton;
+
+    public static VideoFragment newInstance(String viewSource) {
+        VideoFragment fragment = new VideoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(VIEW_SOURCE, viewSource);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +88,13 @@ public class VideoFragment extends Fragment
         Log.d(TAG, "onCreateView()");
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
+
+//        Retrieve video file path.
+        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
+        viewSource = bundle != null ? bundle.getString(VIEW_SOURCE) : viewSource;
+        if (viewSource == null) {
+            return view;
+        }
 
 //        Set up brightness control.
         brightnessAdjuster = BrightnessAdjuster.getInstance(getActivity().getContentResolver());
@@ -139,7 +157,8 @@ public class VideoFragment extends Fragment
                 temp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
                 voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1);
                 topBar.updateBattery(level, scale);
-                Log.e("BatteryManager", "level is " + level + "/" + scale + ", temp is " + temp + ", voltage is " + voltage);
+                Log.e("BatteryManager", "level is " + level + "/" + scale + ", " +
+                        "temp is " + temp + ", voltage is " + voltage);
             }
         };
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -159,14 +178,27 @@ public class VideoFragment extends Fragment
         subtitlesManager = new SubtitlesManager(videoPlayer, subtitlesView);
         subtitlesManager.loadSubtitles(viewSource);
 
-        Button translateButton = (Button) view.findViewById(R.id.translate_button);
+//        Initialize screen translate button.
+        translateButton = (Button) view.findViewById(R.id.translate_button);
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BaseApplication.getEventBus()
-                        .post(new TranslationButtonClickedEvent(subtitlesView.getSelectedText()));
+                        .post(new TranslateButtonClickEvent(subtitlesView.getSelectedText()));
             }
         });
+        translateButton.setVisibility(View.INVISIBLE);
+
+//        Initialize screen add-to-notes button.
+        addButton = (Button) view.findViewById(R.id.add_to_notes_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BaseApplication.getEventBus()
+                        .post(new AddButtonClickEvent(subtitlesView.getSelectedText(), null));
+            }
+        });
+        addButton.setVisibility(View.INVISIBLE);
 
         return view;
     }
@@ -177,7 +209,8 @@ public class VideoFragment extends Fragment
         if(savedInstanceState != null) {
             videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
             videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
-            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION), videoPlayer.getDuration());
+            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION),
+                                                                 videoPlayer.getDuration());
         }
     }
 
@@ -186,6 +219,7 @@ public class VideoFragment extends Fragment
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
         outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+        outState.putString(VIEW_SOURCE, viewSource);
     }
 
     private void initProperties() {
@@ -197,8 +231,6 @@ public class VideoFragment extends Fragment
             Log.e(TAG, e.getMessage(),e);
         }
         seekTime = Integer.valueOf(properties.getProperty("seek_time", String.valueOf(5000)));
-        viewSource = Environment.getExternalStorageDirectory().toString()
-                + getResources().getString(R.string.filename);
     }
 
     @Override
@@ -210,6 +242,8 @@ public class VideoFragment extends Fragment
         getActivity().unregisterReceiver(batteryReceiver);
         screenActionTextView = null;
         subtitlesManager.releaseViews();
+        translateButton = null;
+        addButton = null;
     }
 
     @Override
@@ -236,7 +270,8 @@ public class VideoFragment extends Fragment
                 videoPlayer.changeControllerVisibility();
             case BRIGHTNESS_CHANGE:
                 float distanceRatio = distance / vScrollBarLengthPixels;
-                float brightness = brightnessAdjuster.addBrightness(getActivity().getWindow(), distanceRatio);
+                float brightness = brightnessAdjuster.addBrightness(getActivity().getWindow(),
+                                                                    distanceRatio);
                 showScreenActionMessage(String.format("Brightness: %d%%",
                         Math.round(brightness * 100)));
                 break;
@@ -247,7 +282,8 @@ public class VideoFragment extends Fragment
                         Math.round(volume * 100)));
                 break;
             case SEEK_TO_ACTION:
-                int currentPosition = videoPlayer.addTime((int) (distance / hScrollBarStepPixels * 1000));
+                int currentPosition = videoPlayer.addTime((int)
+                                                        (distance / hScrollBarStepPixels * 1000));
                 int duration = videoPlayer.getDuration();
                 showScreenActionMessage(TimeConverter.convertToString(currentPosition, duration));
                 break;
@@ -282,15 +318,21 @@ public class VideoFragment extends Fragment
         if (videoPlayer.isPlaying()) {
             videoPlayer.pause();
             videoController.updatePausePlay(VideoPlayer.STATE_STOP);
+            translateButton.setVisibility(View.VISIBLE);
+            addButton.setVisibility(View.VISIBLE);
         }
     }
 
 //    Override method of onChangeStateListener.
     @Override
     public void onChangeState(int state) {
-        if(state == VideoPlayer.STATE_PLAY || state == VideoPlayer.STATE_SOUGHT) {
-            subtitlesView.resetSelections();
+        switch (state) {
+            case VideoPlayer.STATE_PLAY:
+                translateButton.setVisibility(View.INVISIBLE);
+                addButton.setVisibility(View.INVISIBLE);
+            case VideoPlayer.STATE_SOUGHT:
+                subtitlesView.resetSelections();
+                break;
         }
-
     }
 }

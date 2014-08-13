@@ -170,6 +170,7 @@ public class SubtitlesView extends TextView {
     }
 
     public void resetSelections() {
+        setText(getText().toString());
         selections = null;
         spannableText = null;
     }

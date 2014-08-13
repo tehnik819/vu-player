@@ -5,6 +5,7 @@
 package com.noveogroup.vuplayer.fragments;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,9 +28,13 @@ public class Library extends Fragment {
             public void onClick(View v) {
                 Log.d("Library", "Button start clicked");
 
+                String viewSource = Environment.getExternalStorageDirectory().toString()
+                        + getResources().getString(R.string.filename);
+                VideoFragment fragment = VideoFragment.newInstance(viewSource);
+
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, new VideoFragment())
+                        .replace(R.id.container, fragment)
                         .addToBackStack(null)
                         .commit();
             }
