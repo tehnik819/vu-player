@@ -63,7 +63,10 @@ public final class PrimaryTranslationFragment extends AbstractTranslationFragmen
                 new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                if (translator != null) {
+                    BaseApplication.getEventBus().post(new AddButtonClickEvent(
+                            translator.getText(), translator.getPrimaryTranslation()));
+                }
             }
         });
 

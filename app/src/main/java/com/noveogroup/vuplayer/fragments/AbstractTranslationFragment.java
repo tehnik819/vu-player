@@ -29,9 +29,6 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
     }
 
     protected void retrieveTranslation() {
-        if (translator == null) {
-            return;
-        }
         translator.setFinished(false);
 
         translationTask = new TranslationTask();
