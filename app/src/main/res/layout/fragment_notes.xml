@@ -1,118 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/notes_background">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/notes_background" >
 
-    <TextView
-        android:id="@+id/notes_text_word_combination"
+
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/notes_word_combination"
-        android:textStyle="bold"
-        android:textSize="@dimen/title_text_size"/>
+        android:id="@+id/notes_scroll"
+        android:layout_marginTop="@dimen/notes_vertical_margin"
+        android:layout_marginLeft="@dimen/notes_horizontal_margin"
+        android:layout_marginRight="@dimen/notes_horizontal_margin"
+        android:background="@drawable/notes_background">
 
-    <EditText
-        android:id="@+id/notes_edit_word_combination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/notes_hint_word_combination"
-        android:background="@android:color/white"
-        android:layout_below="@+id/notes_text_word_combination"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/notes_text_source"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/notes_source"
-        android:textStyle="bold"
-        android:textSize="@dimen/title_text_size"
-        android:layout_below="@+id/notes_edit_word_combination"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/notes_text_word_combination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_word_combination"
+                android:textStyle="bold"
+                android:textSize="@dimen/title_text_size"/>
 
-    <EditText
-        android:id="@+id/notes_edit_source"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/notes_hint_source"
-        android:background="@android:color/white"
-        android:layout_below="@+id/notes_text_source"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <EditText
+                android:id="@+id/notes_edit_word_combination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/notes_hint_word_combination"
+                android:background="@android:color/white"
+                android:layout_below="@+id/notes_text_word_combination"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <TextView
-        android:id="@+id/notes_text_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/notes_comment"
-        android:textStyle="bold"
-        android:textSize="@dimen/title_text_size"
-        android:layout_below="@+id/notes_edit_source"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/notes_text_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_source"
+                android:textStyle="bold"
+                android:textSize="@dimen/title_text_size"
+                android:layout_below="@+id/notes_edit_word_combination"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <EditText
-        android:id="@+id/notes_edit_comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:hint="@string/notes_hint_comment"
-        android:inputType="textMultiLine"
-        android:lines="5"
-        android:background="@android:color/white"
-        android:layout_below="@+id/notes_text_comment"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <EditText
+                android:id="@+id/notes_edit_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/notes_hint_source"
+                android:background="@android:color/white"
+                android:layout_below="@+id/notes_text_source"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <ToggleButton
-        android:id="@+id/notes_toggle_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableRight="@drawable/ic_edit"
-        android:textOff="@string/notes_edit"
-        android:textOn="@string/notes_save"
-        android:textSize="@dimen/title_text_size"
-        android:background="@android:drawable/btn_default"
-        android:layout_below="@+id/notes_edit_comment"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/notes_text_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_comment"
+                android:textStyle="bold"
+                android:textSize="@dimen/title_text_size"
+                android:layout_below="@+id/notes_edit_source"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <Button
-        android:id="@+id/notes_button_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/notes_delete"
-        android:textSize="@dimen/title_text_size"
-        android:background="@android:drawable/btn_default"
-        android:drawableRight="@drawable/ic_delete"
-        android:layout_gravity="center_horizontal"
-        android:layout_alignTop="@+id/notes_toggle_button"
-        android:layout_toRightOf="@+id/notes_toggle_button" />
+            <EditText
+                android:id="@+id/notes_edit_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="@string/notes_hint_comment"
+                android:inputType="textMultiLine"
+                android:lines="5"
+                android:background="@android:color/white"
+                android:layout_below="@+id/notes_text_comment"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/title_text_size"
-        android:textStyle="bold"
-        android:text="@string/notes_added_notes"
-        android:id="@+id/textView"
-        android:layout_below="@+id/notes_toggle_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/notes_share_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_share_text"
+                android:textStyle="bold"
+                android:textSize="@dimen/title_text_size"
+                android:layout_below="@+id/notes_edit_comment"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <ListView
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="@dimen/share_vk_size"
+                android:layout_height="@dimen/share_vk_size"
+                android:id="@+id/share_vk"
+                android:background="@drawable/vk_image"
+                android:layout_below="@+id/notes_share_text"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        <!--    <TextView
+                android:id="@+id/notes_added_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/title_text_size"
+                android:textStyle="bold"
+                android:text="@string/notes_added_notes"
+                android:layout_below="@+id/share_vk"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" /> -->
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+<!--    <ListView
         android:id="@+id/notes_view_notes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:divider="@drawable/red_line_divider"
-        android:dividerHeight="@dimen/list_divider_height"
-        android:layout_gravity="center_horizontal"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/textView" />
+        android:dividerHeight="@dimen/list_divider_height" /> -->
 
-</RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/toggle_item"
+        android:title="@string/notes_edit"
+        android:icon="@drawable/ic_edit"
+        android:orderInCategory="100"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:showAsAction="always|withText" />
+
+    <item android:id="@+id/delete_item"
+        android:title="@string/notes_delete"
+        android:icon="@drawable/ic_delete"
+        android:orderInCategory="200"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:showAsAction="always|withText" />
+
+</menu>

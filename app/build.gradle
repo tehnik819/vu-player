@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
-
+    compileSdkVersion 20
+    buildToolsVersion '20.0.0'
     defaultConfig {
-        applicationId "com.noveogroup.vuplayer"
+        applicationId 'com.noveogroup.vuplayer'
         minSdkVersion 10
         targetSdkVersion 19
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
     }
     buildTypes {
         release {
@@ -17,14 +16,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.+'
+    compile project(':vksdk_library')
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
-//    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
-//    compile 'com.github.riccardove.easyjasub:subtitleConvert:1.0.2'
-
+    //    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
+    //    compile 'com.github.riccardove.easyjasub:subtitleConvert:1.0.2'
 }

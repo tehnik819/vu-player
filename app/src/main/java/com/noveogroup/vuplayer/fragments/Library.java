@@ -17,6 +17,7 @@ import com.noveogroup.vuplayer.R;
 public class Library extends Fragment {
     private Button playVideoBtn;
     private Button noteButton;
+    private Button noteListButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,6 +25,7 @@ public class Library extends Fragment {
         View v = inflater.inflate(R.layout.fragment_library, container, false);
         playVideoBtn = (Button) v.findViewById(R.id.play_video);
         noteButton = (Button) v.findViewById(R.id.note_button);
+        noteListButton = (Button) v.findViewById(R.id.note_list);
 		playVideoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +48,16 @@ public class Library extends Fragment {
                         .commit();
             }
         });
+        noteListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new NotesList())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         return v;
     }
 

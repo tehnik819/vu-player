@@ -17,4 +17,10 @@
         android:layout_height="wrap_content"
         android:text="Test Notes: Add Empty Note" />
 
+    <Button
+        android:id="@+id/note_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test List Notes" />
+
 </LinearLayout>
