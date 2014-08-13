@@ -185,8 +185,10 @@ public final class VideoFragment extends Fragment
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BaseApplication.getEventBus()
-                        .post(new TranslateButtonClickEvent(subtitlesView.getSelectedText()));
+                if (subtitlesView != null) {
+                    BaseApplication.getEventBus()
+                            .post(new TranslateButtonClickEvent(subtitlesView.getSelectedText()));
+                }
             }
         });
         translateButton.setVisibility(View.INVISIBLE);
@@ -196,8 +198,10 @@ public final class VideoFragment extends Fragment
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BaseApplication.getEventBus()
-                        .post(new AddButtonClickEvent(subtitlesView.getSelectedText(), null));
+                if (subtitlesView.getSelectedText() != null) {
+                    BaseApplication.getEventBus()
+                            .post(new AddButtonClickEvent(subtitlesView.getSelectedText(), null));
+                }
             }
         });
         addButton.setVisibility(View.INVISIBLE);

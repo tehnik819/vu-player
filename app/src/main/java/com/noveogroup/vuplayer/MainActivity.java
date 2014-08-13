@@ -27,6 +27,7 @@ import com.noveogroup.vuplayer.events.TranslateButtonClickEvent;
 import com.noveogroup.vuplayer.fragments.DetailedTranslationFragment;
 import com.noveogroup.vuplayer.fragments.LibraryFragment;
 import com.noveogroup.vuplayer.fragments.LibraryVideoFragment;
+import com.noveogroup.vuplayer.fragments.NotesFragment;
 import com.noveogroup.vuplayer.fragments.PrimaryTranslationFragment;
 import com.noveogroup.vuplayer.fragments.VideoFragment;
 import com.noveogroup.vuplayer.services.FilesSearchService;
@@ -39,7 +40,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
-    public static enum FragmentType {ROOT_PAGE, VIDEOS_PAGE, NOTES_PAGE, VIDEO_SCREEN}
+    public static enum FragmentType {
+        ROOT_PAGE,
+        VIDEOS_PAGE,
+        NOTES_PAGE,
+        VIDEO_SCREEN,
+        TRANSLATION_DIALOG,
+        DETAILED_TRANSLATION_PAGE}
 
     public final static String TAG = "VuPlayer.MainActivity";
 
@@ -54,6 +61,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<String> videosPaths = new ArrayList<String>();
     private ArrayList<String> videosPathsTrimmed = new ArrayList<String>();
     private boolean isScanning = false;
+    private String currentVideoName;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -138,12 +146,15 @@ public class MainActivity extends ActionBarActivity {
         GoogleTranslator translator = new GoogleTranslator(text, sourceLanguage,
                                                            translationLanguage);
         PrimaryTranslationFragment fragment = PrimaryTranslationFragment.newInstance(translator);
-        fragment.show(getSupportFragmentManager(), TRANSLATION_DIALOG);
+        fragment.show(getSupportFragmentManager(), FragmentType.TRANSLATION_DIALOG.toString());
     }
 
     @Subscribe
     public void onAddButtonClick(AddButtonClickEvent event) {
-
+        NotesFragment fragment = NotesFragment.newInstance(event.text,
+                currentVideoName, event.comment);
+        FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
+                fragment, FragmentType.NOTES_PAGE.toString(), true);
     }
 
     @Subscribe
@@ -151,7 +162,7 @@ public class MainActivity extends ActionBarActivity {
         DetailedTranslationFragment fragment =
                 DetailedTranslationFragment.newInstance(event.translator);
         FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
-                fragment, "TAG", true);
+                fragment, FragmentType.DETAILED_TRANSLATION_PAGE.toString(), true);
     }
 
     @Subscribe
@@ -172,7 +183,8 @@ public class MainActivity extends ActionBarActivity {
                     }
                     break;
                 case VIDEOS_PAGE:
-                    VideoFragment fragment = VideoFragment.newInstance(event.itemName);
+                    currentVideoName = event.itemName;
+                    VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
                     FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
                             R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
             }
@@ -182,7 +194,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void openVideoPage() {
-
 
         LibraryVideoFragment fragment = LibraryVideoFragment.newInstance(videosPaths,
                 R.drawable.ic_launcher);

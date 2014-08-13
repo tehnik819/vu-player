@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.R;
+import com.noveogroup.vuplayer.events.AddButtonClickEvent;
 import com.noveogroup.vuplayer.translation.Translator;
 
 public final class DetailedTranslationFragment extends AbstractTranslationFragment {
@@ -90,6 +92,12 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
             case R.id.action_translate:
                 retrieveTranslation();
                 return true;
+            case R.id.action_add:
+                if (textToTranslateView.getText() != null) {
+                    BaseApplication.getEventBus().post(new AddButtonClickEvent(
+                            textToTranslateView.getText().toString(),
+                            translationView.getText().toString()));
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
