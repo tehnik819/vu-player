@@ -5,6 +5,7 @@
 package com.noveogroup.vuplayer.fragments;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
@@ -32,22 +33,13 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
             return;
         }
         translator.setFinished(false);
-        translationTask = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                translator.retrieveTranslation(getActivity());
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                if (!isCancelled()) {
-                    super.onPostExecute(result);
-                    showTranslation();
-                }
-                translator.setFinished(true);
-            }
-        }.execute();
+        translationTask = new TranslationTask();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            translationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            translationTask.execute();
+        }
     }
 
     protected abstract void showTranslation();
@@ -65,5 +57,23 @@ public abstract class AbstractTranslationFragment extends DialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(TRANSLATOR, translator);
+    }
+
+    protected class TranslationTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            translator.retrieveTranslation(getActivity());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (!isCancelled()) {
+                super.onPostExecute(result);
+                showTranslation();
+            }
+            translator.setFinished(true);
+        }
     }
 }

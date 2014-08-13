@@ -27,7 +27,7 @@ public class AudioAdjuster {
         int additionInt = (int)(maxVolume * addition);
 
         if(additionInt > 0) {
-            currentVolume = currentVolume + additionInt > maxVolume ? maxVolume
+            currentVolume = ((currentVolume + additionInt) > maxVolume) ? maxVolume
                                                         : currentVolume + additionInt;
         }
         else {
