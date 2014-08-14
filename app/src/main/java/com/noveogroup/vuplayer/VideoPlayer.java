@@ -179,6 +179,9 @@ public class VideoPlayer extends SurfaceView {
 
     public void seekTo(int millis) {
         mediaPlayer.seekTo(millis);
+        if (onChangeStateListener != null) {
+            onChangeStateListener.onChangeState(STATE_SOUGHT);
+        }
     }
 
     private void setMediaPlayerListener() {
@@ -271,10 +274,7 @@ public class VideoPlayer extends SurfaceView {
                             ? BEGIN_OF_VIDEO_TIME : currentPosition + addition;
         }
 
-        mediaPlayer.seekTo(currentPosition);
-        if (onChangeStateListener != null) {
-            onChangeStateListener.onChangeState(STATE_SOUGHT);
-        }
+        seekTo(currentPosition);
 
         return mediaPlayer.getCurrentPosition();
     }
@@ -288,6 +288,7 @@ public class VideoPlayer extends SurfaceView {
     }
 
     public void updateTimeText(int currentMillis, int duration) {
-        mVideoController.updateProgress(VideoController.timeToString(currentMillis), VideoController.timeToString(duration), currentMillis);
+        mVideoController.updateProgress(VideoController.timeToString(currentMillis),
+                VideoController.timeToString(duration), currentMillis);
     }
 }

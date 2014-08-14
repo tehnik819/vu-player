@@ -68,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<String> videosPaths = new ArrayList<String>();
     private boolean isScanning = false;
     private String currentVideoName;
-    private boolean isVisible = false;
+//    private boolean isVisible = false;
     private Bundle savedVideoFragmentState;
 
     @Override
@@ -102,9 +102,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        if (!isVisible) {
-            menu.findItem(R.id.action_go_to_video).setVisible(false);
-        }
+//        if (!isVisible) {
+//            menu.findItem(R.id.action_go_to_video).setVisible(false);
+//        }
 
         return true;
     }
@@ -112,10 +112,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_go_to_video:
-                isVisible = false;
-                invalidateOptionsMenu();
-                return true;
+//            case R.id.action_go_to_video:
+//                isVisible = false;
+//                invalidateOptionsMenu();
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
