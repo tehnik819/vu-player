@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ Copyright (c) 2014 Sergey Bragin and Alexandr Valov
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+
+    <style name="VuAppTheme" parent="Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/VuActionBar</item>
+        <item name="actionBarStyle">@style/VuActionBar</item>
+    </style>
+
+</resources>

@@ -1,8 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
+    <style name="VuActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@drawable/action_bar_background</item>
+        <item name="android:titleTextStyle">@style/VuTitleText</item>
+        <item name="titleTextStyle">@style/VuTitleText</item>
+    </style>
+
+    <style name="VuTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>
