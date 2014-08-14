@@ -8,6 +8,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Environment;
 
+import com.noveogroup.vuplayer.BaseApplication;
+import com.noveogroup.vuplayer.events.FilesSearchEvent;
 import com.noveogroup.vuplayer.utils.PathnameHandler;
 
 import java.io.File;
@@ -33,9 +35,10 @@ public class FilesSearchService extends IntentService {
 
         processDirectory(Environment.getExternalStorageDirectory().toString(), extensions);
 
-        Intent onFinishIntent = new Intent(FILES_SEARCH);
-        onFinishIntent.putExtra(IS_FINISHED, true);
-        sendBroadcast(onFinishIntent);
+//        Intent onFinishIntent = new Intent(FILES_SEARCH);
+//        onFinishIntent.putExtra(IS_FINISHED, true);
+//        sendBroadcast(onFinishIntent);
+        BaseApplication.getEventBus().post(new FilesSearchEvent(null, true));
 
     }
 
@@ -60,10 +63,12 @@ public class FilesSearchService extends IntentService {
                 for (String currentExtension : extensions) {
                     String pattern = ".*?\\." + currentExtension;
                     if (currentFile.matches(pattern)) {
-                        Intent responseIntent = new Intent(FILES_SEARCH);
-                        responseIntent.putExtra(FOUND_FILES, currentFileAbsName);
-                        responseIntent.putExtra(IS_FINISHED, false);
-                        sendBroadcast(responseIntent);
+//                        Intent responseIntent = new Intent(FILES_SEARCH);
+//                        responseIntent.putExtra(FOUND_FILES, currentFileAbsName);
+//                        responseIntent.putExtra(IS_FINISHED, false);
+//                        sendBroadcast(responseIntent);
+                        BaseApplication.getEventBus()
+                                .post(new FilesSearchEvent(currentFileAbsName, false));
                         break;
                     }
                 }

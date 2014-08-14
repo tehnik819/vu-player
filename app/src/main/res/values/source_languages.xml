@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ Copyright (c) 2014 Sergey Bragin and Alexandr Valov
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+    <string-array name="source_languages">
+        <item>Auto|auto</item>
+        <item>Afrikaans|af</item>
+        <item>Albanian|sq</item>
+        <item>Arabic|ar</item>
+        <item>Armenian|hy</item>
+        <item>Azerbaijani|az</item>
+        <item>Basque|eu</item>
+        <item>Belarusian|be</item>
+        <item>Bengali|bn</item>
+        <item>Bosnian|bs</item>
+        <item>Bulgarian|bg</item>
+        <item>Catalan|ca</item>
+        <item>Cebuano|ceb</item>
+        <item>Chinese|zh-cn</item>
+        <item>Croatian|hr</item>
+        <item>Czech|cs</item>
+        <item>Danish|da</item>
+        <item>Dutch|nl</item>
+        <item>English|en</item>
+        <item>Esperanto|eo</item>
+        <item>Estonian|et</item>
+        <item>Filipino|tl</item>
+        <item>Finnish|fi</item>
+        <item>French|fr</item>
+        <item>Galician|gl</item>
+        <item>Georgian|ge</item>
+        <item>German|de</item>
+        <item>Greek|el</item>
+        <item>Gujarati|gu</item>
+        <item>Haitian Creole|ht</item>
+        <item>Hausa|ha</item>
+        <item>Hebrew|iw</item>
+        <item>Hindi|hi</item>
+        <item>Hmong|hmn</item>
+        <item>Hungarian|hu</item>
+        <item>Icelandic|is</item>
+        <item>Igbo|ig</item>
+        <item>Indonesian|id</item>
+        <item>Irish|ga</item>
+        <item>Italian|it</item>
+        <item>Japanese|ja</item>
+        <item>Javanese|jw</item>
+        <item>Kannada|kn</item>
+        <item>Khmer|km</item>
+        <item>Korean|ko</item>
+        <item>Lao|lo</item>
+        <item>Latin|la</item>
+        <item>Latvian|lv</item>
+        <item>Lithuanian|lt</item>
+        <item>Macedonian|mk</item>
+        <item>Malay|ms</item>
+        <item>Maltese|mt</item>
+        <item>Maori|mi</item>
+        <item>Marathi|mr</item>
+        <item>Mongolian|mn</item>
+        <item>Nepali|ne</item>
+        <item>Norwegian|no</item>
+        <item>Persian|fa</item>
+        <item>Polish|pl</item>
+        <item>Portuguese|pt</item>
+        <item>Punjabi|pa</item>
+        <item>Romanian|ro</item>
+        <item>Russian|ru</item>
+        <item>Serbian|sr</item>
+        <item>Slovak|sk</item>
+        <item>Slovenian|sl</item>
+        <item>Somali|so</item>
+        <item>Spanish|es</item>
+        <item>Swahili|sw</item>
+        <item>Swedish|sv</item>
+        <item>Tamil|ta</item>
+        <item>Telugu|te</item>
+        <item>Thai|th</item>
+        <item>Turkish|tr</item>
+        <item>Ukrainian|uk</item>
+        <item>Urdu|ur</item>
+        <item>Vietnamese|vi</item>
+        <item>Welsh|cy</item>
+        <item>Yiddish|yi</item>
+        <item>Yoruba|yo</item>
+        <item>Zulu|zu</item>
+    </string-array>
+</resources>

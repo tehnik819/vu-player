@@ -19,15 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.noveogroup.vuplayer.events.AddButtonClickEvent;
+import com.noveogroup.vuplayer.events.FilesSearchEvent;
 import com.noveogroup.vuplayer.events.LibraryItemClickEvent;
 import com.noveogroup.vuplayer.events.MoreButtonClickEvent;
 import com.noveogroup.vuplayer.events.NewVideosFoundEvent;
 import com.noveogroup.vuplayer.events.RescanActionClickEvent;
 import com.noveogroup.vuplayer.events.TranslateButtonClickEvent;
+import com.noveogroup.vuplayer.events.TranslationPauseEvent;
 import com.noveogroup.vuplayer.fragments.DetailedTranslationFragment;
 import com.noveogroup.vuplayer.fragments.LibraryFragment;
 import com.noveogroup.vuplayer.fragments.LibraryVideoFragment;
 import com.noveogroup.vuplayer.fragments.NotesFragment;
+import com.noveogroup.vuplayer.fragments.NotesList;
 import com.noveogroup.vuplayer.fragments.PrimaryTranslationFragment;
 import com.noveogroup.vuplayer.fragments.VideoFragment;
 import com.noveogroup.vuplayer.services.FilesSearchService;
@@ -63,22 +66,22 @@ public class MainActivity extends ActionBarActivity {
     private boolean isScanning = false;
     private String currentVideoName;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(FilesSearchService.FILES_SEARCH)) {
-                isScanning = !intent.getBooleanExtra(FilesSearchService.IS_FINISHED, true);
-                if (isScanning) {
-                    String file = intent.getStringExtra(FilesSearchService.FOUND_FILES);
-                    if (!videosPaths.contains(file)) {
-                        videosPaths.add(file);
-                    }
-                    BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
-                }
-
-            }
-        }
-    };
+//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (intent.getAction().equals(FilesSearchService.FILES_SEARCH)) {
+//                isScanning = !intent.getBooleanExtra(FilesSearchService.IS_FINISHED, true);
+//                if (isScanning) {
+//                    String file = intent.getStringExtra(FilesSearchService.FOUND_FILES);
+//                    if (!videosPaths.contains(file)) {
+//                        videosPaths.add(file);
+//                    }
+//                    BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
+//                }
+//
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +93,7 @@ public class MainActivity extends ActionBarActivity {
             items.add(getResources().getString(R.string.video_folder_name));
             items.add(getResources().getString(R.string.notes_folder_name));
 
-            LibraryFragment fragment = LibraryFragment.newInstance(items, R.drawable.ic_launcher);
+            LibraryFragment fragment = LibraryFragment.newInstance(items, R.drawable.ic_folder);
             FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
                     R.id.container, fragment, FragmentType.ROOT_PAGE.toString(), false);
 
@@ -104,7 +107,7 @@ public class MainActivity extends ActionBarActivity {
         BaseApplication.getEventBus().register(this);
 
 //        Register BroadcastReceiver to receive Intents from FilesSearchService.
-        registerReceiver(broadcastReceiver, new IntentFilter(FilesSearchService.FILES_SEARCH));
+//        registerReceiver(broadcastReceiver, new IntentFilter(FilesSearchService.FILES_SEARCH));
     }
 
     @Override
@@ -132,7 +135,19 @@ public class MainActivity extends ActionBarActivity {
         BaseApplication.getEventBus().unregister(this);
 
 //        Unregister BroadcastReceiver.
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
+    }
+
+    @Subscribe
+    public void onFilesSearch(FilesSearchEvent event) {
+        isScanning = event.isFinished;
+        if (isScanning) {
+            String file = event.filePath;
+            if (!videosPaths.contains(file)) {
+                videosPaths.add(file);
+            }
+            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
+        }
     }
 
     @Subscribe
@@ -202,7 +217,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void openNotesPage() {
-
+        FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
+                new NotesList(), FragmentType.NOTES_PAGE.toString(), true);
     }
 
     @Subscribe
@@ -213,16 +229,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void runFilesSearch() {
-//        SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCES_NAME,
-//                MODE_PRIVATE);
-//        String videoFoldersString = preferences.getString(PREFS_VIDEO_FOLDERS,
-//                Environment.getExternalStorageDirectory().toString());
-//        String[] videoFolders = videoFoldersString.split("\\|");
         String[] extensions = getResources().getStringArray(R.array.supported_video_formats);
         Intent intent = new Intent(this, FilesSearchService.class);
-//        intent.putExtra(FilesSearchService.FOLDERS, videoFolders);
         intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
         startService(intent);
         isScanning = true;
+    }
+
+    @Subscribe
+    public void onTranslationPause(TranslationPauseEvent event) {
+        SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(PREFS_SOURCE_LANGUAGE, event.currentSourceLanguage);
+        editor.putString(PREFS_TRANSLATION_LANGUAGE, event.currentTranslationLanguage);
+        editor.commit();
     }
 }

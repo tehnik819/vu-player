@@ -7,6 +7,7 @@ package com.noveogroup.vuplayer;
 import android.app.Application;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 public class BaseApplication extends Application {
 
@@ -20,6 +21,6 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        eventBus = new Bus();
+        eventBus = new Bus(ThreadEnforcer.ANY);
     }
 }

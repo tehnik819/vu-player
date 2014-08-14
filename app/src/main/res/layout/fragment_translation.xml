@@ -27,22 +27,18 @@
             android:orientation="horizontal"
             >
 
-            <EditText
-                android:id="@+id/source_language_view"
+            <Spinner
+                android:id="@+id/source_language_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint=""
                 android:layout_weight="1"
-                android:singleLine="true"
                 />
 
-            <EditText
-                android:id="@+id/translation_language_view"
+            <Spinner
+                android:id="@+id/translation_language_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint=""
                 android:layout_weight="1"
-                android:singleLine="true"
                 />
 
         </LinearLayout>

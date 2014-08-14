@@ -10,7 +10,7 @@
 
     <item android:id="@+id/action_rescan"
         android:title="@string/action_rescan_title"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_rescan"
         app:showAsAction="always"
         />
 

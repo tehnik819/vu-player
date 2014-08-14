@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_above="@+id/add_to_notes_button"
-        android:text="Translate"
+        android:src="@drawable/ic_translate_screen"
         />
 
     <Button
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:text="Add to notes"
+        android:src="@drawable/ic_add_screen"
         />
 
 

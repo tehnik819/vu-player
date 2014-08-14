@@ -11,19 +11,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.R;
 import com.noveogroup.vuplayer.events.AddButtonClickEvent;
+import com.noveogroup.vuplayer.events.TranslationPauseEvent;
+import com.noveogroup.vuplayer.translation.Languages;
 import com.noveogroup.vuplayer.translation.Translator;
+import com.noveogroup.vuplayer.utils.ResourcesHandler;
 
 public final class DetailedTranslationFragment extends AbstractTranslationFragment {
 
+    Languages sourceLanguages;
+    Languages translationLanguages;
+
     private EditText textToTranslateView;
-    private EditText sourceLanguageView;
-    private EditText translationLanguageView;
+    private Spinner sourceLanguageSpinner;
+    private Spinner translationLanguageSpinner;
     private TextView translationView;
 
     public static DetailedTranslationFragment newInstance(Translator translator) {
@@ -43,14 +51,33 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
 
         View view = inflater.inflate(R.layout.fragment_translation, container, false);
         textToTranslateView = (EditText) view.findViewById(R.id.text_to_translate_view);
-        sourceLanguageView = (EditText) view.findViewById(R.id.source_language_view);
-        translationLanguageView = (EditText) view.findViewById(R.id.translation_language_view);
+        sourceLanguageSpinner = (Spinner) view.findViewById(R.id.source_language_spinner);
+        translationLanguageSpinner = (Spinner) view.findViewById(R.id.translation_language_spinner);
         translationView = (TextView) view.findViewById(R.id.translation_view);
+
+        sourceLanguages = ResourcesHandler.getLanguages(getResources(),
+                R.array.source_languages, "|");
+        translationLanguages = ResourcesHandler.getLanguages(getResources(),
+                R.array.translation_languages, "|");
+
+        ArrayAdapter<String> sourceLanguagesAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item, sourceLanguages.languagesNamesFull);
+        sourceLanguagesAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        sourceLanguageSpinner.setAdapter(sourceLanguagesAdapter);
+
+        ArrayAdapter<String> translationLanguagesAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item, translationLanguages.languagesNamesFull);
+        translationLanguagesAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        translationLanguageSpinner.setAdapter(sourceLanguagesAdapter);
 
         if (translator != null) {
             textToTranslateView.setText(translator.getText());
-            sourceLanguageView.setText(translator.getSourceLanguage());
-            translationLanguageView.setText(translator.getTranslationLanguage());
+            sourceLanguageSpinner.setSelection(getLanguagePosition(
+                    sourceLanguages.languagesNamesShort, translator.getSourceLanguage()));
+            translationLanguageSpinner.setSelection(getLanguagePosition(
+                    translationLanguages.languagesNamesShort, translator.getTranslationLanguage()));
 
             if (!translator.isFinished()) {
                 retrieveTranslation();
@@ -63,12 +90,24 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        String sourceLanguage = sourceLanguages
+                .languagesNamesShort[sourceLanguageSpinner.getSelectedItemPosition()];
+        String translationLanguage = translationLanguages
+                .languagesNamesShort[translationLanguageSpinner.getSelectedItemPosition()];
+        BaseApplication.getEventBus()
+                .post(new TranslationPauseEvent(sourceLanguage, translationLanguage));
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         textToTranslateView = null;
-        sourceLanguageView = null;
-        translationLanguageView = null;
+        sourceLanguageSpinner = null;
+        translationLanguageSpinner = null;
         translationView = null;
     }
 
@@ -110,8 +149,10 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
         }
 
         String text = textToTranslateView.getText().toString();
-        String sourceLanguage = sourceLanguageView.getText().toString();
-        String translationLanguage = translationLanguageView.getText().toString();
+        String sourceLanguage = sourceLanguages
+                .languagesNamesShort[sourceLanguageSpinner.getSelectedItemPosition()];
+        String translationLanguage = translationLanguages
+                .languagesNamesShort[translationLanguageSpinner.getSelectedItemPosition()];
         if (!translator.getText().equals(text)
                 || !translator.getSourceLanguage().equals(sourceLanguage)
                 || !translator.getTranslationLanguage().equals(translationLanguage)) {
@@ -122,5 +163,15 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
         }
 
         super.retrieveTranslation();
+    }
+
+    private int getLanguagePosition(String[] languagesNames, String name) {
+        for (int i = 0; i < languagesNames.length; ++i) {
+            if (languagesNames[i].equals(name)) {
+                return i;
+            }
+        }
+
+        return languagesNames.length;
     }
 }
