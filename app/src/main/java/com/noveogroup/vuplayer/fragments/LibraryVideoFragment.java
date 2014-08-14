@@ -47,17 +47,6 @@ public class LibraryVideoFragment extends LibraryFragment {
         BaseApplication.getEventBus().unregister(this);
     }
 
-    @Subscribe
-    public void onNewVideosFound(NewVideosFoundEvent event) {
-        for (String currentItem : event.videos) {
-            if (!items.contains(currentItem)) {
-                ((LibraryAdapter) getListAdapter()).add(currentItem);
-            }
-        }
-        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-        items = event.videos;
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_library_video, menu);
@@ -69,6 +58,9 @@ public class LibraryVideoFragment extends LibraryFragment {
 
         switch (item.getItemId()) {
             case R.id.action_rescan:
+//                ((LibraryAdapter) getListAdapter()).clear();
+//                items = new ArrayList<String>();
+//                ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
                 BaseApplication.getEventBus().post(new RescanActionClickEvent());
                 return true;
             default:
@@ -76,4 +68,28 @@ public class LibraryVideoFragment extends LibraryFragment {
         }
 
     }
+
+    @Subscribe
+    public void onNewVideosFound(NewVideosFoundEvent event) {
+        for (String currentItem : event.videos) {
+            if (!items.contains(currentItem)) {
+                ((LibraryAdapter) getListAdapter()).add(currentItem);
+            }
+        }
+        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
+        items = event.videos;
+    }
+
+//    @Subscribe
+//    public void onStartSearchStart(FilesSearchStartEvent event) {
+//        ((LibraryAdapter) getListAdapter()).clear();
+//        items = new ArrayList<String>();
+//        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
+
+//        for (String currentItem : items) {
+//            ((LibraryAdapter) getListAdapter()).remove(currentItem);
+//        }
+//        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
+//        items = new ArrayList<String>();
+//    }
 }

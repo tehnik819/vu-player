@@ -20,8 +20,12 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public final class GoogleTranslator extends AbstractTranslator {
 
@@ -106,7 +110,8 @@ public final class GoogleTranslator extends AbstractTranslator {
                 .getString(R.string.translate_google_http_request);
         try {
             final OkHttpClient client = new OkHttpClient();
-            final String requestFilled = String.format(requestString, text,
+            final String encodedText = URLEncoder.encode(text, "UTF-8");
+            final String requestFilled = String.format(requestString, encodedText,
                                                        sourceLanguage, translationLanguage);
             final Request request = new Request.Builder().url(requestFilled).build();
             Response response = client.newCall(request).execute();

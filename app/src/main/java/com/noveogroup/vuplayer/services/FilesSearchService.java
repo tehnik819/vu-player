@@ -30,7 +30,7 @@ public class FilesSearchService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-//        System.out.println("Searching...");
+        System.out.println("Searching...");
 
         String[] extensions = intent.getStringArrayExtra(EXTENSIONS);
 

@@ -150,7 +150,7 @@ public class SubtitlesView extends TextView {
 
     public String getSelectedText() {
 
-        if(selections == null) {
+        if(selections == null || selections.size() == 0) {
             return "";
         }
 

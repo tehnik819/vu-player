@@ -4,10 +4,15 @@
 
 package com.noveogroup.vuplayer;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +26,7 @@ import com.noveogroup.vuplayer.events.NewVideosFoundEvent;
 import com.noveogroup.vuplayer.events.RescanActionClickEvent;
 import com.noveogroup.vuplayer.events.TranslateButtonClickEvent;
 import com.noveogroup.vuplayer.events.TranslationPauseEvent;
+import com.noveogroup.vuplayer.events.VideosRemovedEvent;
 import com.noveogroup.vuplayer.fragments.DetailedTranslationFragment;
 import com.noveogroup.vuplayer.fragments.LibraryFragment;
 import com.noveogroup.vuplayer.fragments.LibraryVideoFragment;
@@ -31,9 +37,12 @@ import com.noveogroup.vuplayer.fragments.VideoFragment;
 import com.noveogroup.vuplayer.services.FilesSearchService;
 import com.noveogroup.vuplayer.translation.google.GoogleTranslator;
 import com.noveogroup.vuplayer.utils.FragmentTransactionHandler;
+import com.noveogroup.vuplayer.utils.PathnameHandler;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -47,6 +56,10 @@ public class MainActivity extends ActionBarActivity {
 
     public final static String TAG = "VuPlayer.MainActivity";
 
+    private final static String VIDEOS_PATHS = "VuPlayer.VIDEOS_PATHS";
+    private final static String CURRENT_VIDEO_NAME = "VuPlayer.CURRENT_VIDEO_NAME";
+    private final static String IS_SCANNING = "VuPlayer.IS_SCANNING";
+
     public final static String TRANSLATION_DIALOG = "VuPlayer.TRANSLATION_DIALOG";
 //    public final static String ROOT_PAGE = "VuPlayer.ROOT_PAGE";
 
@@ -56,8 +69,8 @@ public class MainActivity extends ActionBarActivity {
     public final static String PREFS_VIDEO_FOLDERS = "VIDEO_FOLDERS";
 
     private ArrayList<String> videosPaths = new ArrayList<String>();
+    private ArrayList<String> videosPathsNew;
     private ArrayList<String> videosPathsTrimmed = new ArrayList<String>();
-    private VideoFragment fragment;
     private boolean isScanning = false;
     private String currentVideoName;
 
@@ -93,6 +106,10 @@ public class MainActivity extends ActionBarActivity {
                     R.id.container, fragment, FragmentType.ROOT_PAGE.toString(), false);
 
             runFilesSearch();
+        } else {
+            videosPaths = savedInstanceState.getStringArrayList(VIDEOS_PATHS);
+            currentVideoName = savedInstanceState.getString(CURRENT_VIDEO_NAME);
+            isScanning = savedInstanceState.getBoolean(IS_SCANNING);
         }
 
 //        Set hardware volume buttons to work in the Activity.
@@ -131,9 +148,18 @@ public class MainActivity extends ActionBarActivity {
 //        unregisterReceiver(broadcastReceiver);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(VIDEOS_PATHS, videosPaths);
+        outState.putString(CURRENT_VIDEO_NAME, currentVideoName);
+        outState.putBoolean(IS_SCANNING, isScanning);
+    }
+
     @Subscribe
     public void onFilesSearch(FilesSearchEvent event) {
         isScanning = !event.isFinished;
+//        System.out.println(isScanning);
         if (isScanning) {
             String file = event.filePath;
             if (!videosPaths.contains(file)) {
@@ -192,9 +218,11 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case VIDEOS_PAGE:
                     currentVideoName = event.itemName;
-                    fragment = VideoFragment.newInstance(currentVideoName);
-                    FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
-                            R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
+                    if (new File(currentVideoName).canRead()) {
+                        VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
+                        FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
+                                R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
+                    }
             }
         } catch (Exception exception) {
             Log.e(TAG, "Exception: ", exception);
@@ -204,7 +232,7 @@ public class MainActivity extends ActionBarActivity {
     private void openVideoPage() {
 
         LibraryVideoFragment fragment = LibraryVideoFragment.newInstance(videosPaths,
-                R.drawable.ic_launcher);
+                R.drawable.ic_video);
         FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
                 fragment, FragmentType.VIDEOS_PAGE.toString(), true);
     }
@@ -218,6 +246,8 @@ public class MainActivity extends ActionBarActivity {
     public void onRescanActionClick(RescanActionClickEvent event) {
         if (!isScanning) {
             runFilesSearch();
+//        } else {
+//            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
         }
     }
 
@@ -227,6 +257,7 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
         startService(intent);
         isScanning = true;
+        videosPathsNew = new ArrayList<String>();
     }
 
     @Subscribe
@@ -235,6 +266,6 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREFS_SOURCE_LANGUAGE, event.currentSourceLanguage);
         editor.putString(PREFS_TRANSLATION_LANGUAGE, event.currentTranslationLanguage);
-        editor.commit();
+        editor.apply();
     }
 }
