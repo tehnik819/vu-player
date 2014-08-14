@@ -11,18 +11,14 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -86,9 +82,8 @@ public final class VideoFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setRetainInstance(true);
+        //setRetainInstance(true);
         ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
-        Log.d(TAG, "onCreateView()");
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 
@@ -216,8 +211,10 @@ public final class VideoFragment extends Fragment
         if(savedInstanceState != null) {
             videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
             videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
-            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION),
-                                                                 videoPlayer.getDuration());
+            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION), videoPlayer.getDuration());
+        }
+        else {
+            videoPlayer.play();
         }
     }
 
@@ -227,6 +224,7 @@ public final class VideoFragment extends Fragment
         outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
         outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
         outState.putString(VIEW_SOURCE, viewSource);
+        videoPlayer.pause();
     }
 
     private void initProperties() {
@@ -256,8 +254,6 @@ public final class VideoFragment extends Fragment
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "OnPause");
-        videoPlayer.pause();
         brightnessAdjuster.restoreSavedSettings();
         subtitlesManager.stopSubtitling();
     }
@@ -265,7 +261,6 @@ public final class VideoFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        videoPlayer.play();
         subtitlesManager.runSubtitling();
     }
 

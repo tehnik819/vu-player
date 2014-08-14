@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.RelativeLayout;
@@ -50,7 +49,6 @@ public class VideoPlayer extends SurfaceView {
 
     public VideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.d(TAG, "CONSTRUCTOR");
         mediaPlayer = new MediaPlayer();
         getHolder().addCallback(mSHCallback);
         setMediaPlayerListener();
@@ -61,19 +59,16 @@ public class VideoPlayer extends SurfaceView {
     private SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback(){
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            Log.d(TAG, "surfaceCreated()");
             mSurfaceHolder = holder;
             mediaPlayer.setDisplay(mSurfaceHolder);
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            Log.d(TAG, "surfaceChanged()");
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            Log.d(TAG, "surfaceDestroyed()");
             mSurfaceHolder = null;
             currentState = STATE_IDLE;
         }
@@ -87,7 +82,6 @@ public class VideoPlayer extends SurfaceView {
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Log.d(TAG, "setDataSource() | VideoWidth = " + mediaPlayer.getVideoWidth() + "; VideoHeight = " + mediaPlayer.getVideoHeight());
     }
 
     public static String getSimpleFileName(String name) {
@@ -123,7 +117,6 @@ public class VideoPlayer extends SurfaceView {
             mVideoWidth = mediaPlayer.getVideoWidth();
             mVideoHeight = mediaPlayer.getVideoHeight();
             getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-            Log.d(TAG, "prepare()");
             mediaPlayer.prepare();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -143,7 +136,6 @@ public class VideoPlayer extends SurfaceView {
 
     public void play() {
         if(!mediaPlayer.isPlaying()) {
-            Log.d(TAG, "play() | VideoWidth = " + mediaPlayer.getVideoWidth() + "; VideoHeight = " + mediaPlayer.getVideoHeight());
             mVideoHeight = mediaPlayer.getVideoHeight();
             mVideoWidth = mediaPlayer.getVideoWidth();
             fitToScreen();
@@ -241,7 +233,7 @@ public class VideoPlayer extends SurfaceView {
     }
 
     public void handleState(int state) {
-        Log.d(TAG, "handleState()");
+        currentState = state;
         switch (state) {
             case STATE_IDLE:
                 pause();
@@ -258,12 +250,10 @@ public class VideoPlayer extends SurfaceView {
 
     public void changeControllerVisibility() {
         if(mVideoController.isShowing()) {
-            Log.d(TAG, "Hide control");
             mVideoController.hide();
             mTopBar.hide();
         }
         else {
-            Log.d(TAG, "Show control");
             mVideoController.show();
             mTopBar.show();
         }
