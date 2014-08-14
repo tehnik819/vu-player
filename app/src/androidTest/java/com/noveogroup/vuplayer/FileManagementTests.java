@@ -9,6 +9,7 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.noveogroup.vuplayer.subtitles.SubtitlesLoader;
+import com.noveogroup.vuplayer.utils.FileManager;
 import com.noveogroup.vuplayer.utils.PathnameHandler;
 
 import java.util.ArrayList;

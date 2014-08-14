@@ -10,13 +10,13 @@
 
     <item android:id="@+id/action_translate"
         android:title="@string/action_translate_title"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_action_translate"
         app:showAsAction="always"
         />
 
     <item android:id="@+id/action_add"
         android:title="@string/action_add_title"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_action_add"
         app:showAsAction="always"
         />
 

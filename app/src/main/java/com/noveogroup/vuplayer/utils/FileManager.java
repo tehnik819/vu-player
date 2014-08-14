@@ -2,9 +2,7 @@
  * Copyright (c) 2014 Sergey Bragin and Alexandr Valov
  ******************************************************************************/
 
-package com.noveogroup.vuplayer;
-
-import com.noveogroup.vuplayer.utils.PathnameHandler;
+package com.noveogroup.vuplayer.utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,12 +11,19 @@ import java.util.List;
 
 public class FileManager {
 
+    public static final String[] REGEXP_SYMBOLS = new String[] {".", "(", ")", "[", "]", "{", "}"};
+
     public static List<String> getFiles(String absPathnamePattern) {
         String[] absPathnameSplit = PathnameHandler.getSplitPathname(absPathnamePattern);
         File directory = new File(absPathnameSplit[0]);
         String[] filesList = directory.list();
         ArrayList<String> files = new ArrayList<String>();
         String filenamePattern = absPathnameSplit[1].replace("?", ".?").replace("*", ".*?");
+
+        for (String symbol : REGEXP_SYMBOLS) {
+            filenamePattern = filenamePattern.replace(symbol, "\\" + symbol);
+        }
+
         for (String file : filesList) {
             if (file.matches(filenamePattern)) {
                 files.add(PathnameHandler.getAbsPathname(absPathnameSplit[0], file));

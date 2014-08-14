@@ -6,11 +6,9 @@ package com.noveogroup.vuplayer.subtitles;
 
 import android.os.Handler;
 import android.text.Html;
-import android.text.SpannableString;
 import android.util.Log;
-import android.view.View;
 
-import com.noveogroup.vuplayer.FileManager;
+import com.noveogroup.vuplayer.utils.FileManager;
 import com.noveogroup.vuplayer.VideoPlayer;
 import com.noveogroup.vuplayer.utils.PathnameHandler;
 
