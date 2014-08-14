@@ -39,6 +39,7 @@ public class VideoPlayer extends SurfaceView {
     public static final int STATE_PLAY = 1;
     public static final int STATE_STOP = 2;
     public static final int STATE_SOUGHT = 3;
+    public static final int STATE_UNDEFINED = 4;
     private static final String TAG = "VideoPlayer";
 
     private OnChangeStateListener onChangeStateListener;

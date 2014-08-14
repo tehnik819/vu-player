@@ -63,6 +63,8 @@ public final class VideoFragment extends Fragment
     private AudioAdjuster audioAdjuster;
     private int hScrollBarStepPixels;
     private int vScrollBarLengthPixels;
+    private int videoPlayerState = VideoPlayer.STATE_UNDEFINED;
+    private int videoPlayerPosition;
 
     private SubtitlesManager subtitlesManager;
     private VideoPlayer videoPlayer;
@@ -85,6 +87,8 @@ public final class VideoFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        setRetainInstance(true);
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 
@@ -219,33 +223,41 @@ public final class VideoFragment extends Fragment
         });
         addButton.setVisibility(View.INVISIBLE);
 
+        if (videoPlayerState == VideoPlayer.STATE_UNDEFINED) {
+            videoPlayer.play();
+        } else {
+            videoPlayer.seekTo(videoPlayerPosition);
+            videoPlayer.handleState(videoPlayerState);
+            videoPlayer.updateTimeText(videoPlayerPosition, videoPlayer.getDuration());
+        }
+
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null) {
-            videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
-            videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
-            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION),
-                    videoPlayer.getDuration());
-        }
-        else {
-            videoPlayer.play();
-        }
-    }
+//    @Override
+//    public void onActivityCreated(Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//        if(savedInstanceState != null) {
+//            videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
+//            videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
+//            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION),
+//                    videoPlayer.getDuration());
+//        }
+//        else {
+//            videoPlayer.play();
+//        }
+//    }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if(videoPlayer != null) {
-            outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
-            outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
-            videoPlayer.pause();
-        }
-        outState.putString(VIEW_SOURCE, viewSource);
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        if(videoPlayer != null) {
+//            outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
+//            outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+//            videoPlayer.pause();
+//        }
+//        outState.putString(VIEW_SOURCE, viewSource);
+//    }
 
     private void initProperties() {
         properties = new Properties();
@@ -261,7 +273,7 @@ public final class VideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        videoPlayer.pause();
+//        videoPlayer.pause();
         videoPlayer.release();
         videoPlayer = null;
         ((ActionBarActivity)getActivity()).getSupportActionBar().show();
@@ -278,6 +290,10 @@ public final class VideoFragment extends Fragment
         brightnessAdjuster.restoreSavedSettings();
         subtitlesManager.stopSubtitling();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        videoPlayerState = videoPlayer.getCurrentState();
+        videoPlayer.pause();
+        videoPlayerPosition = videoPlayer.getCurrentPosition();
     }
 
     @Override
