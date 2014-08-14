@@ -4,6 +4,9 @@
 
 package com.noveogroup.vuplayer.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PathnameHandler {
 
     private PathnameHandler() {
@@ -47,5 +50,18 @@ public class PathnameHandler {
         }
 
         return getWithRemovedExtension(pathname) + "." + extension;
+    }
+
+    public static List<String> getRemovedFiles(ArrayList<String> oldPathnames,
+                                               ArrayList<String> newPathnames) {
+
+        ArrayList<String> removedFiles = new ArrayList<String>();
+        for (String currentPathname : oldPathnames) {
+            if (!newPathnames.contains(currentPathname)) {
+                removedFiles.add(currentPathname);
+            }
+        }
+
+        return removedFiles;
     }
 }

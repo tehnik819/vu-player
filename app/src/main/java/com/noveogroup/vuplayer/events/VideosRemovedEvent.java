@@ -5,12 +5,12 @@
 package com.noveogroup.vuplayer.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class NewVideosFoundEvent {
-    public ArrayList<String> videos;
-    public boolean isFirst;
+public class VideosRemovedEvent {
+    public List<String> removedVideos;
 
-    public NewVideosFoundEvent(ArrayList<String> videos) {
-        this.videos = videos;
+    public VideosRemovedEvent(List<String> removedVideos) {
+        this.removedVideos = removedVideos;
     }
 }
