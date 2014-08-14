@@ -115,8 +115,6 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

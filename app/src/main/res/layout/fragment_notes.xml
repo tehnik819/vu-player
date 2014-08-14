@@ -79,7 +79,7 @@
                 android:gravity="top"
                 android:hint="@string/notes_hint_comment"
                 android:inputType="textMultiLine"
-                android:lines="5"
+                android:minLines="5"
                 android:background="@android:color/white"
                 android:layout_below="@+id/notes_text_comment"
                 android:layout_alignParentLeft="true"
@@ -106,28 +106,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
-        <!--    <TextView
-                android:id="@+id/notes_added_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/title_text_size"
-                android:textStyle="bold"
-                android:text="@string/notes_added_notes"
-                android:layout_below="@+id/share_vk"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" /> -->
-
         </RelativeLayout>
 
     </ScrollView>
-
-<!--    <ListView
-        android:id="@+id/notes_view_notes"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@drawable/red_line_divider"
-        android:dividerHeight="@dimen/list_divider_height" /> -->
-
-
 
 </LinearLayout>

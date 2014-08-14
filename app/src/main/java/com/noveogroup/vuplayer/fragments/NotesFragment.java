@@ -246,8 +246,6 @@ public class NotesFragment extends Fragment {
                 new AsyncQueryHandler(getActivity().getContentResolver()){}.startDelete(1, null, ContentDescriptor.Notes.TABLE_URI, selection, null);
                 getActivity().getSupportFragmentManager().popBackStack();
                 return true;
-            case R.id.action_settings:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
