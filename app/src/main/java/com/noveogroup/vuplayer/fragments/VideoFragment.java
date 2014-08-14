@@ -198,7 +198,7 @@ public final class VideoFragment extends Fragment
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (subtitlesView != null) {
+                if (subtitlesView != null && subtitlesView.getSelectedText().length() != 0) {
                     BaseApplication.getEventBus()
                             .post(new TranslateButtonClickEvent(subtitlesView.getSelectedText()));
                 }
@@ -211,7 +211,7 @@ public final class VideoFragment extends Fragment
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (subtitlesView.getSelectedText() != null) {
+                if (subtitlesView != null && subtitlesView.getSelectedText().length() != 0) {
                     BaseApplication.getEventBus()
                             .post(new AddButtonClickEvent(subtitlesView.getSelectedText(), null));
                 }
@@ -339,9 +339,9 @@ public final class VideoFragment extends Fragment
         if (videoPlayer.isPlaying()) {
             videoPlayer.pause();
             videoController.updatePausePlay(VideoPlayer.STATE_STOP);
-            translateButton.setVisibility(View.VISIBLE);
-            addButton.setVisibility(View.VISIBLE);
         }
+        translateButton.setVisibility(View.VISIBLE);
+        addButton.setVisibility(View.VISIBLE);
     }
 
 //    Override method of onChangeStateListener.
