@@ -37,8 +37,8 @@ public class LibraryFragment extends ListFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
         if (bundle != null) {
@@ -50,6 +50,8 @@ public class LibraryFragment extends ListFragment {
             LibraryAdapter adapter = new LibraryAdapter(getActivity(), items, itemIconId);
             setListAdapter(adapter);
         }
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

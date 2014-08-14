@@ -85,9 +85,6 @@ public final class VideoFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
-//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 

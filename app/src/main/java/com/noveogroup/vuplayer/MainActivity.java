@@ -61,36 +61,15 @@ public class MainActivity extends ActionBarActivity {
     private final static String CURRENT_VIDEO_NAME = "VuPlayer.CURRENT_VIDEO_NAME";
     private final static String IS_SCANNING = "VuPlayer.IS_SCANNING";
 
-    public final static String TRANSLATION_DIALOG = "VuPlayer.TRANSLATION_DIALOG";
-//    public final static String ROOT_PAGE = "VuPlayer.ROOT_PAGE";
-
     public final static String SHARED_PREFERENCES_NAME = "com.noveogroup.vuplayer";
     public final static String PREFS_SOURCE_LANGUAGE = "SOURCE_LANGUAGE";
     public final static String PREFS_TRANSLATION_LANGUAGE = "TRANSLATION_LANGUAGE";
-    public final static String PREFS_VIDEO_FOLDERS = "VIDEO_FOLDERS";
 
     private ArrayList<String> videosPaths = new ArrayList<String>();
-    private ArrayList<String> videosPathsNew;
-    private ArrayList<String> videosPathsTrimmed = new ArrayList<String>();
     private boolean isScanning = false;
     private String currentVideoName;
-
-//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if (intent.getAction().equals(FilesSearchService.FILES_SEARCH)) {
-//                isScanning = !intent.getBooleanExtra(FilesSearchService.IS_FINISHED, true);
-//                if (isScanning) {
-//                    String file = intent.getStringExtra(FilesSearchService.FOUND_FILES);
-//                    if (!videosPaths.contains(file)) {
-//                        videosPaths.add(file);
-//                    }
-//                    BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
-//                }
-//
-//            }
-//        }
-//    };
+    private boolean isVisible = false;
+    private Bundle savedVideoFragmentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,21 +97,25 @@ public class MainActivity extends ActionBarActivity {
 
 //        Register with the event bus.
         BaseApplication.getEventBus().register(this);
-
-//        Register BroadcastReceiver to receive Intents from FilesSearchService.
-//        registerReceiver(broadcastReceiver, new IntentFilter(FilesSearchService.FILES_SEARCH));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        if (!isVisible) {
+            menu.findItem(R.id.action_go_to_video).setVisible(false);
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
+        switch (item.getItemId()) {
+            case R.id.action_go_to_video:
+                isVisible = false;
+                invalidateOptionsMenu();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -144,9 +127,6 @@ public class MainActivity extends ActionBarActivity {
 
 //        Unregister with the event bus.
         BaseApplication.getEventBus().unregister(this);
-
-//        Unregister BroadcastReceiver.
-//        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -160,7 +140,6 @@ public class MainActivity extends ActionBarActivity {
     @Subscribe
     public void onFilesSearch(FilesSearchEvent event) {
         isScanning = !event.isFinished;
-//        System.out.println(isScanning);
         if (isScanning) {
             String file = event.filePath;
             if (!videosPaths.contains(file)) {
@@ -246,8 +225,6 @@ public class MainActivity extends ActionBarActivity {
     public void onRescanActionClick(RescanActionClickEvent event) {
         if (!isScanning) {
             runFilesSearch();
-//        } else {
-//            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
         }
     }
 
@@ -257,7 +234,6 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
         startService(intent);
         isScanning = true;
-        videosPathsNew = new ArrayList<String>();
     }
 
     @Subscribe
