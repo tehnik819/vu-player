@@ -13,4 +13,5 @@
     <color name="notes_background">#ffb7b7b7</color>
     <color name="list_item_text_color">#ffff7b0b</color>
     <color name="action_bar_background">#555555</color>
+    <color name="screen_action_text_color">#ffffa500</color>
 </resources>
