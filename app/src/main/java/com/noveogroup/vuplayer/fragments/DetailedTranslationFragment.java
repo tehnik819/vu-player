@@ -56,9 +56,9 @@ public final class DetailedTranslationFragment extends AbstractTranslationFragme
         translationView = (TextView) view.findViewById(R.id.translation_view);
 
         sourceLanguages = ResourcesHandler.getLanguages(getResources(),
-                R.array.source_languages, "|");
+                R.array.source_languages, "\\|");
         translationLanguages = ResourcesHandler.getLanguages(getResources(),
-                R.array.translation_languages, "|");
+                R.array.translation_languages, "\\|");
 
         ArrayAdapter<String> sourceLanguagesAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, sourceLanguages.languagesNamesFull);

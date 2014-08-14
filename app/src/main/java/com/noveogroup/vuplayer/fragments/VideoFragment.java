@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.noveogroup.vuplayer.BaseApplication;
@@ -71,8 +72,8 @@ public final class VideoFragment extends Fragment
     private VideoController videoController;
     private TopBar topBar;
     private BroadcastReceiver batteryReceiver;
-    private Button translateButton;
-    private Button addButton;
+    private ImageButton translateButton;
+    private ImageButton addButton;
 
     public static VideoFragment newInstance(String viewSource) {
         VideoFragment fragment = new VideoFragment();
@@ -181,7 +182,7 @@ public final class VideoFragment extends Fragment
         subtitlesManager.loadSubtitles(viewSource);
 
 //        Initialize screen translate button.
-        translateButton = (Button) view.findViewById(R.id.translate_button);
+        translateButton = (ImageButton) view.findViewById(R.id.translate_button);
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,7 +195,7 @@ public final class VideoFragment extends Fragment
         translateButton.setVisibility(View.INVISIBLE);
 
 //        Initialize screen add-to-notes button.
-        addButton = (Button) view.findViewById(R.id.add_to_notes_button);
+        addButton = (ImageButton) view.findViewById(R.id.add_to_notes_button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
