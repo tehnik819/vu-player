@@ -200,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
                     if (new File(currentVideoName).canRead()) {
                         VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
                         FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
-                                R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), false);
+                                R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
                     }
             }
         } catch (Exception exception) {

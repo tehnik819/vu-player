@@ -300,6 +300,7 @@ public final class VideoFragment extends Fragment
     public void onResume() {
         super.onResume();
         subtitlesManager.runSubtitling();
+        ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
