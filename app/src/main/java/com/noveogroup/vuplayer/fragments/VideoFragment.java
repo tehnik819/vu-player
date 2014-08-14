@@ -238,10 +238,12 @@ public final class VideoFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
-        outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+        if(videoPlayer != null) {
+            outState.putInt(KEY_CURRENT_POSITION, videoPlayer.getCurrentPosition());
+            outState.putInt(KEY_CURRENT_STATE, videoPlayer.getCurrentState());
+            videoPlayer.pause();
+        }
         outState.putString(VIEW_SOURCE, viewSource);
-        videoPlayer.pause();
     }
 
     private void initProperties() {
