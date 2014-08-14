@@ -34,7 +34,7 @@ public final class GoogleTranslator extends AbstractTranslator {
     private String translationJson;
 
     public GoogleTranslator(String text, String sourceLanguage, String translationLanguage) {
-        this.text = text;
+        this.text = text.replace(" ", "+");
         this.sourceLanguage = sourceLanguage;
         this.translationLanguage = translationLanguage;
     }
@@ -50,6 +50,11 @@ public final class GoogleTranslator extends AbstractTranslator {
     }
 
     @Override
+    public String getText() {
+        return text.replace("+", " ");
+    }
+
+    @Override
     public String getPrimaryTranslation() {
         if(translationJson == null) {
             return null;
@@ -59,7 +64,8 @@ public final class GoogleTranslator extends AbstractTranslator {
         GoogleTranslationItem translationItem = gson.fromJson(translationJson,
                 GoogleTranslationItem.class);
 
-        return translationItem != null ? translationItem.getSentences().get(0).getTrans() : null;
+        return translationItem != null ? translationItem.getSentences().get(0).getTrans()
+                .replace("+", " ") : null;
     }
 
     @Override
@@ -91,7 +97,8 @@ public final class GoogleTranslator extends AbstractTranslator {
             }
         }
 
-        SpannableString detailedTranslation = new SpannableString(translationString);
+        SpannableString detailedTranslation = new SpannableString(
+                translationString.replace("+", " "));
         for(int[] interval : highlightIntervals) {
             ForegroundColorSpan partOfSpeechSpan = new ForegroundColorSpan(context.getResources()
                     .getColor(R.color.translation_part_of_speech_text));

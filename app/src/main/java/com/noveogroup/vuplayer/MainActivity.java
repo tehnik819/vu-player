@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.noveogroup.vuplayer.events.AddButtonClickEvent;
 import com.noveogroup.vuplayer.events.FilesSearchEvent;
@@ -178,8 +179,7 @@ public class MainActivity extends ActionBarActivity {
                 getResources().getString(R.string.source_language_default));
         String translationLanguage = preferences.getString(PREFS_TRANSLATION_LANGUAGE,
                 getResources().getString(R.string.translation_language_default));
-        String text = event.textToTranslate.replace(' ', '+');
-        GoogleTranslator translator = new GoogleTranslator(text, sourceLanguage,
+        GoogleTranslator translator = new GoogleTranslator(event.textToTranslate, sourceLanguage,
                                                            translationLanguage);
         PrimaryTranslationFragment fragment = PrimaryTranslationFragment.newInstance(translator);
         fragment.show(getSupportFragmentManager(), FragmentType.TRANSLATION_DIALOG.toString());

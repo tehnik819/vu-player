@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -85,6 +86,8 @@ public final class VideoFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
+//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
 
@@ -228,7 +231,8 @@ public final class VideoFragment extends Fragment
         if(savedInstanceState != null) {
             videoPlayer.seekTo(savedInstanceState.getInt(KEY_CURRENT_POSITION));
             videoPlayer.handleState(savedInstanceState.getInt(KEY_CURRENT_STATE));
-            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION), videoPlayer.getDuration());
+            videoPlayer.updateTimeText(savedInstanceState.getInt(KEY_CURRENT_POSITION),
+                    videoPlayer.getDuration());
         }
         else {
             videoPlayer.play();
@@ -276,12 +280,15 @@ public final class VideoFragment extends Fragment
         super.onPause();
         brightnessAdjuster.restoreSavedSettings();
         subtitlesManager.stopSubtitling();
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         subtitlesManager.runSubtitling();
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
 //    Override the method from OnScreenGestureListener.
