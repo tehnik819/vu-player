@@ -109,11 +109,11 @@ public class LoginActivity extends FragmentActivity {
     private void postToWall() {
         final String post;
         if(!TextUtils.isEmpty(postStrings[1])) {
-            post = "Встретил классную фразу " + postStrings[0]
-                    + " в фильме " + postStrings[1] + ". " + postStrings[2] + ".\nVuPlayer - What do you vu today? ©";
+            post = "Встретил классную фразу \"" + postStrings[0]
+                    + "\" в фильме \"" + postStrings[1] + "\".\n" + postStrings[2] + ".\nVuPlayer - What do you vu today? ©";
         }
         else {
-            post = "Встретил классную фразу " + postStrings[0] + ". " + postStrings[2] + ".\nVuPlayer - What do you vu today? ©";
+            post = "Встретил классную фразу \"" + postStrings[0] + "\".\n" + postStrings[2] + ".\nVuPlayer - What do you vu today? ©";
         }
         final Bitmap photo = BitmapFactory.decodeResource(getResources(), R.drawable.post_image);
         VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(photo, VKImageParameters.jpgImage(0.9f)), 0, Integer.valueOf(ID));

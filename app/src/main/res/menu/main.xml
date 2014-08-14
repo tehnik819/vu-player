@@ -2,10 +2,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.noveogroup.vuplayer.MainActivity" >
 
-
-
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="1000"
-        android:showAsAction="never" />
 </menu>
