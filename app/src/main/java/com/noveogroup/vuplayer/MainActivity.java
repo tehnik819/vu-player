@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Subscribe
     public void onFilesSearch(FilesSearchEvent event) {
-        isScanning = event.isFinished;
+        isScanning = !event.isFinished;
         if (isScanning) {
             String file = event.filePath;
             if (!videosPaths.contains(file)) {

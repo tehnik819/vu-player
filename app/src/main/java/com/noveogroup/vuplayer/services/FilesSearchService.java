@@ -7,6 +7,7 @@ package com.noveogroup.vuplayer.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Environment;
+import android.os.Handler;
 
 import com.noveogroup.vuplayer.BaseApplication;
 import com.noveogroup.vuplayer.events.FilesSearchEvent;
@@ -29,7 +30,7 @@ public class FilesSearchService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        System.out.println("Searching...");
+//        System.out.println("Searching...");
 
         String[] extensions = intent.getStringArrayExtra(EXTENSIONS);
 
@@ -38,7 +39,10 @@ public class FilesSearchService extends IntentService {
 //        Intent onFinishIntent = new Intent(FILES_SEARCH);
 //        onFinishIntent.putExtra(IS_FINISHED, true);
 //        sendBroadcast(onFinishIntent);
-        BaseApplication.getEventBus().post(new FilesSearchEvent(null, true));
+
+        generateEvent(null, true);
+
+//        BaseApplication.getEventBus().post(new FilesSearchEvent(null, true));
 
     }
 
@@ -67,12 +71,24 @@ public class FilesSearchService extends IntentService {
 //                        responseIntent.putExtra(FOUND_FILES, currentFileAbsName);
 //                        responseIntent.putExtra(IS_FINISHED, false);
 //                        sendBroadcast(responseIntent);
-                        BaseApplication.getEventBus()
-                                .post(new FilesSearchEvent(currentFileAbsName, false));
+                        generateEvent(currentFileAbsName, false);
+//                        BaseApplication.getEventBus()
+//                                .post(new FilesSearchEvent(currentFileAbsName, false));
                         break;
                     }
                 }
             }
         }
+    }
+
+    private void generateEvent(final String currentFileAbsName, final boolean isFinished) {
+        Handler handler = new Handler(getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                BaseApplication.getEventBus()
+                        .post(new FilesSearchEvent(currentFileAbsName, isFinished));
+            }
+        });
     }
 }
