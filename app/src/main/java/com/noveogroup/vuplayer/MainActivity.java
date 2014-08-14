@@ -4,15 +4,10 @@
 
 package com.noveogroup.vuplayer;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -36,7 +31,6 @@ import com.noveogroup.vuplayer.fragments.VideoFragment;
 import com.noveogroup.vuplayer.services.FilesSearchService;
 import com.noveogroup.vuplayer.translation.google.GoogleTranslator;
 import com.noveogroup.vuplayer.utils.FragmentTransactionHandler;
-import com.noveogroup.vuplayer.utils.PathnameHandler;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -63,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
 
     private ArrayList<String> videosPaths = new ArrayList<String>();
     private ArrayList<String> videosPathsTrimmed = new ArrayList<String>();
+    private VideoFragment fragment;
     private boolean isScanning = false;
     private String currentVideoName;
 
@@ -199,7 +194,7 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case VIDEOS_PAGE:
                     currentVideoName = event.itemName;
-                    VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
+                    fragment = VideoFragment.newInstance(currentVideoName);
                     FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
                             R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
             }

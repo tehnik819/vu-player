@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -82,7 +84,6 @@ public final class VideoFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //setRetainInstance(true);
         ((ActionBarActivity)getActivity()).getSupportActionBar().hide();
         initProperties();
         View view = inflater.inflate(R.layout.fragment_video, container, false);
@@ -115,9 +116,25 @@ public final class VideoFragment extends Fragment
                     screenActionTextView = screenActionTextView == null
                             ? (TextView) getActivity().findViewById(R.id.screen_action_text_view)
                             : screenActionTextView;
-                    if(screenActionTextView != null) {
+                    if(screenActionTextView != null && screenActionTextView.getVisibility() == View.VISIBLE) {
                         super.onTouch(view, motionEvent);
-                        screenActionTextView.setVisibility(View.INVISIBLE);
+                        Animation fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+                        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                screenActionTextView.setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        screenActionTextView.startAnimation(fadeOut);
                         return true;
                     }
                 }
@@ -241,6 +258,7 @@ public final class VideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        videoPlayer.pause();
         videoPlayer.release();
         videoPlayer = null;
         ((ActionBarActivity)getActivity()).getSupportActionBar().show();
@@ -270,6 +288,7 @@ public final class VideoFragment extends Fragment
         switch (screenAction) {
             case SWITCH_ON_SINGLE_TAP:
                 videoPlayer.changeControllerVisibility();
+                break;
             case BRIGHTNESS_CHANGE:
                 float distanceRatio = distance / vScrollBarLengthPixels;
                 float brightness = brightnessAdjuster.addBrightness(getActivity().getWindow(),
