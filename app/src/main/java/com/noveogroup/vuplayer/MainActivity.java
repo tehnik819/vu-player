@@ -59,17 +59,13 @@ public class MainActivity extends ActionBarActivity {
 
     private final static String VIDEOS_PATHS = "VuPlayer.VIDEOS_PATHS";
     private final static String CURRENT_VIDEO_NAME = "VuPlayer.CURRENT_VIDEO_NAME";
-    private final static String IS_SCANNING = "VuPlayer.IS_SCANNING";
 
     public final static String SHARED_PREFERENCES_NAME = "com.noveogroup.vuplayer";
     public final static String PREFS_SOURCE_LANGUAGE = "SOURCE_LANGUAGE";
     public final static String PREFS_TRANSLATION_LANGUAGE = "TRANSLATION_LANGUAGE";
 
-    private ArrayList<String> videosPaths = new ArrayList<String>();
-    private boolean isScanning = false;
+    private ArrayList<String> videosPaths;
     private String currentVideoName;
-//    private boolean isVisible = false;
-    private Bundle savedVideoFragmentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +80,9 @@ public class MainActivity extends ActionBarActivity {
             LibraryFragment fragment = LibraryFragment.newInstance(items, R.drawable.ic_folder);
             FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
                     R.id.container, fragment, FragmentType.ROOT_PAGE.toString(), false);
-
-            runFilesSearch();
         } else {
             videosPaths = savedInstanceState.getStringArrayList(VIDEOS_PATHS);
             currentVideoName = savedInstanceState.getString(CURRENT_VIDEO_NAME);
-            isScanning = savedInstanceState.getBoolean(IS_SCANNING);
         }
 
 //        Set hardware volume buttons to work in the Activity.
@@ -102,23 +95,12 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-//        if (!isVisible) {
-//            menu.findItem(R.id.action_go_to_video).setVisible(false);
-//        }
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-//            case R.id.action_go_to_video:
-//                isVisible = false;
-//                invalidateOptionsMenu();
-//                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -134,20 +116,19 @@ public class MainActivity extends ActionBarActivity {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(VIDEOS_PATHS, videosPaths);
         outState.putString(CURRENT_VIDEO_NAME, currentVideoName);
-        outState.putBoolean(IS_SCANNING, isScanning);
     }
 
-    @Subscribe
-    public void onFilesSearch(FilesSearchEvent event) {
-        isScanning = !event.isFinished;
-        if (isScanning) {
-            String file = event.filePath;
-            if (!videosPaths.contains(file)) {
-                videosPaths.add(file);
-            }
-            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
-        }
-    }
+//    @Subscribe
+//    public void onFilesSearch(FilesSearchEvent event) {
+//        isScanning = !event.isFinished;
+//        if (isScanning) {
+//            String file = event.filePath;
+//            if (!videosPaths.contains(file)) {
+//                videosPaths.add(file);
+//            }
+//            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
+//        }
+//    }
 
     @Subscribe
     public void onTranslateButtonClick(TranslateButtonClickEvent event) {
@@ -197,10 +178,13 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case VIDEOS_PAGE:
                     currentVideoName = event.itemName;
+                    videosPaths = ((LibraryFragment) getSupportFragmentManager()
+                            .findFragmentByTag(FragmentType.VIDEOS_PAGE.toString())).getItemsList();
                     if (new File(currentVideoName).canRead()) {
                         VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
                         FragmentTransactionHandler.putFragment(getSupportFragmentManager(),
-                                R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(), true);
+                                R.id.container, fragment, FragmentType.VIDEO_SCREEN.toString(),
+                                true);
                     }
             }
         } catch (Exception exception) {
@@ -209,7 +193,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void openVideoPage() {
-
         LibraryVideoFragment fragment = LibraryVideoFragment.newInstance(videosPaths,
                 R.drawable.ic_video);
         FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
@@ -221,20 +204,20 @@ public class MainActivity extends ActionBarActivity {
                 new NotesList(), FragmentType.NOTES_PAGE.toString(), true);
     }
 
-    @Subscribe
-    public void onRescanActionClick(RescanActionClickEvent event) {
-        if (!isScanning) {
-            runFilesSearch();
-        }
-    }
+//    @Subscribe
+//    public void onRescanActionClick(RescanActionClickEvent event) {
+//        if (!isScanning) {
+//            runFilesSearch();
+//        }
+//    }
 
-    private void runFilesSearch() {
-        String[] extensions = getResources().getStringArray(R.array.supported_video_formats);
-        Intent intent = new Intent(this, FilesSearchService.class);
-        intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
-        startService(intent);
-        isScanning = true;
-    }
+//    private void runFilesSearch() {
+//        String[] extensions = getResources().getStringArray(R.array.supported_video_formats);
+//        Intent intent = new Intent(this, FilesSearchService.class);
+//        intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
+//        startService(intent);
+//        isScanning = true;
+//    }
 
     @Subscribe
     public void onTranslationPause(TranslationPauseEvent event) {

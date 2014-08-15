@@ -18,13 +18,7 @@ import com.noveogroup.vuplayer.events.LibraryItemClickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LibraryFragment extends ListFragment {
-
-    protected static final String ITEMS = "VuPlayer.ITEMS";
-    protected static final String ITEM_ICON_ID = "VuPlayer.ITEM_ICON_ID";
-
-    protected ArrayList<String> items;
-    protected int itemIconId;
+public class LibraryFragment extends AbstractLibraryFragment {
 
     public static LibraryFragment newInstance(ArrayList<String> items, int itemIconId) {
         LibraryFragment fragment = new LibraryFragment();
@@ -52,22 +46,5 @@ public class LibraryFragment extends ListFragment {
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putStringArrayList(ITEMS, items);
-        outState.putInt(ITEM_ICON_ID, itemIconId);
-    }
-
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-
-        BaseApplication.getEventBus()
-                .post(new LibraryItemClickEvent(((LibraryAdapter) listView.getAdapter())
-                        .getItem(position)));
     }
 }
