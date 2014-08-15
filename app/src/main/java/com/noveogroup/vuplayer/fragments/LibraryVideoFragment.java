@@ -62,6 +62,7 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
         }
 
         if (items == null) {
+            items = new ArrayList<String>();
             runFilesSearch();
         }
         LibraryAdapter adapter = new LibraryAdapter(getActivity(), items, itemIconId);
@@ -128,7 +129,6 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
     }
 
     private void runFilesSearch() {
-        items = new ArrayList<String>();
         String[] extensions = getResources().getStringArray(R.array.supported_video_formats);
         Intent intent = new Intent(getActivity(), FilesSearchService.class);
         intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
