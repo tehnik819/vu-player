@@ -28,6 +28,7 @@ import com.noveogroup.vuplayer.events.RescanActionClickEvent;
 import com.noveogroup.vuplayer.events.TranslateButtonClickEvent;
 import com.noveogroup.vuplayer.events.TranslationPauseEvent;
 import com.noveogroup.vuplayer.events.VideosRemovedEvent;
+import com.noveogroup.vuplayer.fragments.AbstractLibraryFragment;
 import com.noveogroup.vuplayer.fragments.DetailedTranslationFragment;
 import com.noveogroup.vuplayer.fragments.LibraryFragment;
 import com.noveogroup.vuplayer.fragments.LibraryVideoFragment;
@@ -118,18 +119,6 @@ public class MainActivity extends ActionBarActivity {
         outState.putString(CURRENT_VIDEO_NAME, currentVideoName);
     }
 
-//    @Subscribe
-//    public void onFilesSearch(FilesSearchEvent event) {
-//        isScanning = !event.isFinished;
-//        if (isScanning) {
-//            String file = event.filePath;
-//            if (!videosPaths.contains(file)) {
-//                videosPaths.add(file);
-//            }
-//            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
-//        }
-//    }
-
     @Subscribe
     public void onTranslateButtonClick(TranslateButtonClickEvent event) {
         SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
@@ -178,7 +167,7 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case VIDEOS_PAGE:
                     currentVideoName = event.itemName;
-                    videosPaths = ((LibraryFragment) getSupportFragmentManager()
+                    videosPaths = ((AbstractLibraryFragment) getSupportFragmentManager()
                             .findFragmentByTag(FragmentType.VIDEOS_PAGE.toString())).getItemsList();
                     if (new File(currentVideoName).canRead()) {
                         VideoFragment fragment = VideoFragment.newInstance(currentVideoName);
@@ -203,21 +192,6 @@ public class MainActivity extends ActionBarActivity {
         FragmentTransactionHandler.putFragment(getSupportFragmentManager(), R.id.container,
                 new NotesList(), FragmentType.NOTES_PAGE.toString(), true);
     }
-
-//    @Subscribe
-//    public void onRescanActionClick(RescanActionClickEvent event) {
-//        if (!isScanning) {
-//            runFilesSearch();
-//        }
-//    }
-
-//    private void runFilesSearch() {
-//        String[] extensions = getResources().getStringArray(R.array.supported_video_formats);
-//        Intent intent = new Intent(this, FilesSearchService.class);
-//        intent.putExtra(FilesSearchService.EXTENSIONS, extensions);
-//        startService(intent);
-//        isScanning = true;
-//    }
 
     @Subscribe
     public void onTranslationPause(TranslationPauseEvent event) {

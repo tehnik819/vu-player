@@ -34,16 +34,24 @@ public class LibraryFragment extends AbstractLibraryFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (bundle != null) {
-            items = bundle.getStringArrayList(ITEMS);
-            itemIconId = bundle.getInt(ITEM_ICON_ID);
+        if (savedInstanceState != null) {
+            items = savedInstanceState.getStringArrayList(ITEMS);
+            itemIconId = savedInstanceState.getInt(ITEM_ICON_ID);
         }
 
-        if (items != null) {
-            LibraryAdapter adapter = new LibraryAdapter(getActivity(), items, itemIconId);
-            setListAdapter(adapter);
+        if (items == null) {
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                items = bundle.getStringArrayList(ITEMS);
+                itemIconId = bundle.getInt(ITEM_ICON_ID);
+            }
         }
+
+        if (items == null) {
+            items = new ArrayList<String>();
+        }
+        LibraryAdapter adapter = new LibraryAdapter(getActivity(), items, itemIconId);
+        setListAdapter(adapter);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }

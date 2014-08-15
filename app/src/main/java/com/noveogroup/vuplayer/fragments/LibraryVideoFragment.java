@@ -45,12 +45,20 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        isScanning = savedInstanceState != null
-                ? savedInstanceState.getBoolean(IS_SCANNING) : isScanning;
-        Bundle bundle = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (bundle != null) {
-            items = bundle.getStringArrayList(ITEMS);
-            itemIconId = bundle.getInt(ITEM_ICON_ID);
+        if (savedInstanceState != null) {
+            items = savedInstanceState.getStringArrayList(ITEMS);
+            itemIconId = savedInstanceState.getInt(ITEM_ICON_ID);
+            if (items != null) {
+                isScanning = savedInstanceState.getBoolean(IS_SCANNING);
+            }
+        }
+
+        if (items == null) {
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                items = bundle.getStringArrayList(ITEMS);
+                itemIconId = bundle.getInt(ITEM_ICON_ID);
+            }
         }
 
         if (items == null) {
@@ -67,15 +75,6 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        setHasOptionsMenu(true);
-//        BaseApplication.getEventBus().register(this);
-//        return super.onCreateView(inflater, container, savedInstanceState);
-//    }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -108,10 +107,6 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
                     ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
                     runFilesSearch();
                 }
-//                ((LibraryAdapter) getListAdapter()).clear();
-//                items = new ArrayList<String>();
-//                ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-//                BaseApplication.getEventBus().post(new RescanActionClickEvent());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -126,36 +121,11 @@ public final class LibraryVideoFragment extends AbstractLibraryFragment {
             String file = event.filePath;
             if (!items.contains(file)) {
                 items.add(file);
-                ((LibraryAdapter) getListAdapter()).add(file);
+                System.out.println(file);
             }
             ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-//            BaseApplication.getEventBus().post(new NewVideosFoundEvent(videosPaths));
         }
     }
-
-//    @Subscribe
-//    public void onNewVideosFound(NewVideosFoundEvent event) {
-//        for (String currentItem : event.videos) {
-//            if (items == null || !items.contains(currentItem)) {
-//                ((LibraryAdapter) getListAdapter()).add(currentItem);
-//            }
-//        }
-//        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-//        items = event.videos;
-//    }
-
-//    @Subscribe
-//    public void onStartSearchStart(FilesSearchStartEvent event) {
-//        ((LibraryAdapter) getListAdapter()).clear();
-//        items = new ArrayList<String>();
-//        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-
-//        for (String currentItem : items) {
-//            ((LibraryAdapter) getListAdapter()).remove(currentItem);
-//        }
-//        ((LibraryAdapter) getListAdapter()).notifyDataSetChanged();
-//        items = new ArrayList<String>();
-//    }
 
     private void runFilesSearch() {
         items = new ArrayList<String>();
