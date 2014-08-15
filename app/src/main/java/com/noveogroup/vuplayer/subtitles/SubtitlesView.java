@@ -93,6 +93,10 @@ public class SubtitlesView extends TextView {
 
             selections.add(selection);
 
+            if (selection.endIndex > getText().length() - 1) {
+                return true;
+            }
+
             spannableText.setSpan(selection.textColor, selection.startIndex,
                     selection.endIndex, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             spannableText.setSpan(selection.backgroundColor, selection.startIndex,
